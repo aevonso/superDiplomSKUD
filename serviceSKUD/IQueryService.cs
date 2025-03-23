@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace serviceSKUD
 {
-    public interface ICommandService <in T>
+    public interface IQueryService<in TIn, out TOut>
+                     where TIn: IQuery
     {
-        void Execute(T obj);
+        TOut Execute(TIn obj);
     }
 }
