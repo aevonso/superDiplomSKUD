@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace serviceSKUD
 {
     public interface IQueryService<in TIn, out TOut>
-                     where TIn: IQuery
+                   where TIn : IQuery
     {
         TOut Execute(TIn obj);
     }

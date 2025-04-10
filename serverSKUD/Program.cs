@@ -1,23 +1,28 @@
+using AutorizationDomain;
+using AutorizationDomain.Queries;
+using AutorizationDomain.Queries.Object;
 using Data;
 using Microsoft.EntityFrameworkCore;
+using serviceSKUD;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllers();
 
-// Регистрация DbContext ДО builder.Build()
 string? path = builder.Configuration.GetConnectionString("pgSql");
 ArgumentNullException.ThrowIfNull(path);
 builder.Services.AddDbContext<Connection>(options =>
     options.UseNpgsql(path));
 
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddScoped<IQueryService<EntryDto, Employeer?>, AutorizationQueryService>();
+builder.Services.AddScoped<IQueryService<Employeer, ClaimsPrincipal>, CreatePrincipalQueryService>();
+
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
