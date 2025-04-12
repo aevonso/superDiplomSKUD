@@ -2,6 +2,7 @@ using AutorizationDomain;
 using AutorizationDomain.Queries;
 using AutorizationDomain.Queries.Object;
 using Data;
+using Data.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using serviceSKUD;
@@ -33,6 +34,10 @@ builder.Services.AddDbContext<Connection>(options =>
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IQueryService<EntryDto, Employeer?>, AutorizationQueryService>();
 builder.Services.AddScoped<IQueryService<Employeer, ClaimsPrincipal>, CreatePrincipalQueryService>();
+
+//qr code
+builder.Services.AddScoped<IQrRepository, QrRepository>();
+builder.Services.AddScoped<ICommandService<GenerateQrDto>, GenerateQrCommandService>();
 
 var app = builder.Build();
 
