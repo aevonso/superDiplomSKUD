@@ -19,6 +19,8 @@ namespace Data
         public DbSet<PointOfPassage> PointOfPassages { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<Room> Rooms { get; set; }
+        public DbSet<QrCode> QrCodes { get; set; } = null!;
+
 
         public Connection(DbContextOptions<Connection> options) : base(options)
         {
