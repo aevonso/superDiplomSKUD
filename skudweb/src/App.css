@@ -1,0 +1,83 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body, #root {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    /* явно указываем шрифты с кириллицей: */
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+.App {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+.App-header {
+    background-color: #4a90e2;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.App-logo {
+    height: 2rem;
+}
+
+.App-main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.LoginForm {
+    width: 100%;
+    max-width: 360px;
+    padding: 2rem;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+    .LoginForm h1 {
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+.FormGroup {
+    margin-bottom: 1rem;
+}
+
+    .FormGroup label {
+        display: block;
+        margin-bottom: 0.25rem;
+        color: #555;
+    }
+
+    .FormGroup input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+.SubmitButton {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #4a90e2;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+    .SubmitButton:hover {
+        background-color: #357ab7;
+    }
