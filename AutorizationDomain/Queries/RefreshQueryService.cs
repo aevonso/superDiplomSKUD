@@ -1,17 +1,17 @@
-﻿// AutorizationDomain/Queries/AutorizationQueryService.cs
+﻿// AutorizationDomain/Queries/RefreshQueryService.cs
 using System;
 using AutorizationDomain.Queries.Object;
 using serviceSKUD;
 
 namespace AutorizationDomain.Queries
 {
-    public class AutorizationQueryService
-        : IQueryService<EntryDto, AuthResult>
+    public class RefreshQueryService
+        : IQueryService<RefreshDto, AuthResult>
     {
         private readonly IAuthRepository _repo;
         private readonly ITokenService _tokenSvc;
 
-        public AutorizationQueryService(
+        public RefreshQueryService(
             IAuthRepository repo,
             ITokenService tokenSvc)
         {
@@ -19,10 +19,14 @@ namespace AutorizationDomain.Queries
             _tokenSvc = tokenSvc ?? throw new ArgumentNullException(nameof(tokenSvc));
         }
 
-        public AuthResult Execute(EntryDto dto)
+        public AuthResult Execute(RefreshDto dto)
         {
-            var user = _repo.Autorization(dto.Login, dto.Password);
+            var user = _repo.GetByRefreshToken(dto.RefreshToken);
             if (user == null) return null!;
+
+            var expiry = _repo.GetRefreshExpiry(dto.RefreshToken);
+            if (expiry == null || expiry.Value < DateTime.UtcNow)
+                return null!;
 
             return _tokenSvc.CreateTokens(user);
         }
