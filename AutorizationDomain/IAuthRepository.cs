@@ -10,5 +10,12 @@ namespace AutorizationDomain
     public interface IAuthRepository
     {
         Employeer? Autorization(string login, string password);
+        void UpdateRefreshToken(string login, string refreshToken, DateTime expiry);
+
+        DateTime? GetRefreshExpiry(string refreshToken);
+
+        Employeer? GetByRefreshToken(string refreshToken);
+
+
     }
 }
