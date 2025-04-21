@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AuntificationDomain\AuntificationDomain.csproj" />
     <ProjectReference Include="..\AutorizationDomain\AutorizationDomain.csproj" />
   </ItemGroup>
 

@@ -47,6 +47,8 @@ namespace Data.Tables
             [MaxLength(9)]
             public string PassportNumber { get; set; } = null!;
 
+            public string Email { get; set; } = null!;
+
             [MaxLength(6)]
             public string PassportSeria { get; set; } = null!;
 
