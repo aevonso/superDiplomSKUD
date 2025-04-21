@@ -1,3 +1,6 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -9,14 +12,14 @@ html, body, #root {
     padding: 0;
     height: 100%;
     /* явно указываем шрифты с кириллицей: */
-    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    font-family: 'Roboto', Arial, sans-serif;
 }
 
 .App {
     display: flex;
     flex-direction: column;
     height: 100%;
-    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    font-family: 'Roboto', Arial, sans-serif;
 }
 
 .App-header {

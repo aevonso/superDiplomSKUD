@@ -1,52 +1,61 @@
-import React, { useState } from 'react'
-import logo from './assets/natk-logo.png'
+п»їimport React, { useState } from 'react';
+import logo from './assets/natk-logo.png';
+import apiClient from './apiClient';
 
 export default function App() {
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+    const [login, setLogin] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
 
-    const handleSubmit = e => {
-        e.preventDefault()
-        console.log({ email, password })
-    }
+    const handleSubmit = async e => {
+        e.preventDefault();
+        setError('');
+        try {
+            const { data } = await apiClient.post('/auth/login', {
+                login,
+                password
+            });
+            localStorage.setItem('accessToken', data.accessToken);
+            localStorage.setItem('refreshToken', data.refreshToken);
+            console.log('РЈСЃРїРµС€РЅРѕ Р·Р°Р»РѕРіРёРЅРёР»РёСЃСЊ:', data);
+        } catch (err) {
+            if (err.response?.status === 401) {
+                setError('РќРµРІРµСЂРЅС‹Р№ Р»РѕРіРёРЅ РёР»Рё РїР°СЂРѕР»СЊ');
+            } else {
+                setError('РћС€РёР±РєР° СЃРѕРµРґРёРЅРµРЅРёСЏ СЃ СЃРµСЂРІРµСЂРѕРј');
+            }
+        }
+    };
 
     return (
         <div className="App">
             <header className="App-header">
-                <img src={logo} alt="НАТК" className="App-logo" />
+                <img src={logo} alt="РќРђРўРљ" className="App-logo" />
             </header>
-
             <main className="App-main">
                 <form className="LoginForm" onSubmit={handleSubmit}>
-                    <h1>Авторизация в систему</h1>
-
+                    <h1>РђРІС‚РѕСЂРёР·Р°С†РёСЏ РІ СЃРёСЃС‚РµРјСѓ</h1>
+                    {error && <p style={{ color: 'red' }}>{error}</p>}
                     <div className="FormGroup">
-                        <label htmlFor="email">Email</label>
+                        <label htmlFor="login">Р›РѕРіРёРЅ</label>
                         <input
-                            id="email"
-                            type="text"
-                            value={email}
-                            onChange={e => setEmail(e.target.value)}
-                            placeholder="Введите email"
+                            id="login"
+                            value={login}
+                            onChange={e => setLogin(e.target.value)}
                         />
                     </div>
-
                     <div className="FormGroup">
-                        <label htmlFor="password">Пароль</label>
+                        <label htmlFor="password">РџР°СЂРѕР»СЊ</label>
                         <input
                             id="password"
                             type="password"
                             value={password}
                             onChange={e => setPassword(e.target.value)}
-                            placeholder="Введите пароль"
                         />
                     </div>
-
-                    <button type="submit" className="SubmitButton">
-                        Войти
-                    </button>
+                    <button type="submit" className="SubmitButton">Р’РѕР№С‚Рё</button>
                 </form>
             </main>
         </div>
-    )
+    );
 }
