@@ -7,8 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MailKit" Version="4.11.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.4" />
+    <ProjectReference Include="..\serviceSKUD\serviceSKUD.csproj" />
   </ItemGroup>
 
 </Project>

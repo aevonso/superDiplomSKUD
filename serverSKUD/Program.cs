@@ -14,6 +14,10 @@ using AutorizationDomain.Queries.Object;
 using Data;
 using Data.Repository;
 using serviceSKUD;
+using AuntificationDomain.Queries.Object;
+using AuntificationDomain;
+using AuthenticationDomain.Queries;
+using AuntificationDomain.Queries;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,6 +73,9 @@ builder.Services
             ClockSkew = TimeSpan.Zero
         };
     });
+builder.Services.Configure<SmtpSettings>(
+    builder.Configuration.GetSection("SmtpSettings")
+);
 builder.Services.AddAuthorization();
 
 var connString = builder.Configuration.GetConnectionString("pgSql");
@@ -85,6 +92,15 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddScoped<IQrRepository, QrRepository>();
 builder.Services.AddScoped<ICommandService<GenerateQrDto>, GenerateQrCommandService>();
+
+builder.Services.AddScoped<I2FaRepository, TwoFaRepository>();
+builder.Services.AddScoped<
+    IQueryService<TwoFactorGenerateDto, Task<string>>,
+    Generate2FaQueryService>();
+builder.Services.AddScoped<
+    IQueryService<TwoFactorValidateDto, Task<TwoFactorResult>>,
+    Validate2FaQueryService>();
+builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 var app = builder.Build();
 
