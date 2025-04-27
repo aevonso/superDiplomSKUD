@@ -1,0 +1,88 @@
+/* TwoFactor.css */
+
+/* header повторяет стиль App-header */
+.App-header {
+    background-color: #4a90e2;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.App-logo {
+    height: 2rem;
+}
+
+.TwoFactor {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: #fff;
+    font-family: Arial, sans-serif;
+}
+
+.TwoFactor-main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.TwoFactor-form {
+    width: 100%;
+    max-width: 360px;
+    padding: 2rem;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    text-align: center;
+}
+
+.TwoFactor-monkey {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    transition: transform 0.2s;
+}
+
+.TwoFactor-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-weight: bold;
+}
+
+.TwoFactor-input {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1.25rem;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.TwoFactor-error {
+    color: #c00;
+    margin-bottom: 1rem;
+}
+
+.TwoFactor-button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #4a90e2;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+    .TwoFactor-button:disabled {
+        opacity: 0.6;
+        cursor: default;
+    }
+
+.TwoFactor-success {
+    font-size: 1.5rem;
+    color: #080;
+    text-align: center;
+}
