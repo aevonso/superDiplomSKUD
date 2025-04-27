@@ -18,10 +18,13 @@ using AuntificationDomain.Queries.Object;
 using AuntificationDomain;
 using AuthenticationDomain.Queries;
 using AuntificationDomain.Queries;
+using DashboardDomain.IRepository;
+using DashboardDomain.Queries.Object;
+using DashboardDomain.Queries;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Добавляем CORS
+//CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -47,7 +50,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// 4. Настройки JWT из appsettings.json
+//Настройки JWT 
 builder.Services.Configure<JwtSettings>(
     builder.Configuration.GetSection("JwtSettings")
 );
@@ -56,7 +59,7 @@ var jwtSettings = builder.Configuration
     .Get<JwtSettings>()!;
 var keyBytes = Encoding.UTF8.GetBytes(jwtSettings.Key);
 
-// 5. Аутентификация по JWT
+// Аутентификация по JWT
 builder.Services
     .AddAuthentication("JwtBearer")
     .AddJwtBearer("JwtBearer", opts =>
@@ -102,9 +105,16 @@ builder.Services.AddScoped<
     Validate2FaQueryService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
+
+builder.Services.AddScoped<IAccessAttemptRepository, AccessAttemptRepository>();
+builder.Services.AddScoped<
+    IQueryService<GetRecentAttemptsQuery, IEnumerable<AttemptDto>>,
+    GetRecentAttemptsQueryService>();
+
+
 var app = builder.Build();
 
-// 8. Swagger UI в режиме разработки
+//Swagger UI в режиме разработки
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -116,13 +126,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// 9. Подключаем CORS _до_ аутентификации и контроллеров
 app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-// 10. Маршрутизация контроллеров
 app.MapControllers();
 
 app.Run();

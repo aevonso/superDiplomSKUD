@@ -1,5 +1,6 @@
 ﻿using AuntificationDomain;
 using AuntificationDomain.Queries.Object;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using serviceSKUD;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ namespace serverSKUD.Controllers
 {
     [ApiController]
     [Route("auth/2fa")]
+    [AllowAnonymous]
     public class TwoFactorController : ControllerBase
     {
         private readonly IQueryService<TwoFactorGenerateDto, Task<string>> _genSvc;

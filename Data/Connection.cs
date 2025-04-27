@@ -20,7 +20,9 @@ namespace Data
         public DbSet<Post> Posts { get; set; }
         public DbSet<Room> Rooms { get; set; }
         public DbSet<QrCode> QrCodes { get; set; } = null!;
-        public DbSet<TwoFactorCode> twoFactorCodes { get; set; } = null!;
+        public DbSet<TwoFactorCode> twoFactorCodes { get; set; } = null!; 
+        public DbSet<AccessAttempt> AccessAttempts { get; set; }
+
 
         public Connection(DbContextOptions<Connection> options) : base(options)
         {

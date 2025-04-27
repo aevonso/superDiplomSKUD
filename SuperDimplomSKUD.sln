@@ -25,6 +25,8 @@ Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "skudweb", "SkudWEB\skudweb.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuntificationDomain", "AuntificationDomain\AuntificationDomain.csproj", "{BD086D7C-CB16-4B48-B49F-5FC94C93D645}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DashboardDomain", "DashboardDomain\DashboardDomain.csproj", "{AD6DD171-F9A1-47B5-A0E1-FEAB027B8C4B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{BD086D7C-CB16-4B48-B49F-5FC94C93D645}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD086D7C-CB16-4B48-B49F-5FC94C93D645}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD086D7C-CB16-4B48-B49F-5FC94C93D645}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD6DD171-F9A1-47B5-A0E1-FEAB027B8C4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD6DD171-F9A1-47B5-A0E1-FEAB027B8C4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD6DD171-F9A1-47B5-A0E1-FEAB027B8C4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD6DD171-F9A1-47B5-A0E1-FEAB027B8C4B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -68,6 +74,7 @@ Global
 		{DAADB039-6FCB-44F0-A8B6-1B12FDF1A30C} = {44B5286F-EEE0-4BFC-A1AD-3665D3EC3C54}
 		{BBCC08C8-ED53-048C-D2D7-8AE188A8C117} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
 		{BD086D7C-CB16-4B48-B49F-5FC94C93D645} = {8D0B0C07-BDED-46B9-B1F1-2285D33FB03A}
+		{AD6DD171-F9A1-47B5-A0E1-FEAB027B8C4B} = {8D0B0C07-BDED-46B9-B1F1-2285D33FB03A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4F4309A8-28FD-41CC-949D-42CAEC547C7E}
