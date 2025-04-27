@@ -1,4 +1,5 @@
 ﻿using AutorizationDomain.Queries.Object;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using serviceSKUD;
 
@@ -6,6 +7,7 @@ namespace serverSKUD.Controllers
 {
     [ApiController]
     [Route("auth")]
+    [AllowAnonymous]
     public class AuthController : ControllerBase
     {
         private readonly IQueryService<EntryDto, AuthResult> _loginService;
