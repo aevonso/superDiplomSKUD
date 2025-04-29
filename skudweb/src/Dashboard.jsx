@@ -1,33 +1,62 @@
-﻿import React, { useEffect, useState } from 'react'
-import { fetchRecentAttempts } from './dashboardApi'
-// Импортируем логотип из папки assets:
-import logo from './assets/natk-logo.png'
-import './Dashboard.css'
+﻿import React, { useEffect, useState } from 'react';
+import { fetchStats, fetchAttempts } from './dashboardApi';
+import logo from './assets/natk-logo.png';
+import './Dashboard.css';
 
 export default function Dashboard() {
-    const [attempts, setAttempts] = useState([])
-    const [counts, setCounts] = useState({ employees: 0, devices: 0, attempts: 0 })
+    const [counts, setCounts] = useState({ employees: 0, devices: 0, attempts: 0 });
+    const [attempts, setAttempts] = useState([]);
     const [collapsed, setCollapsed] = useState(() => {
-        const saved = localStorage.getItem('sidebar-collapsed')
-        return saved ? JSON.parse(saved) : false
-    })
+        const saved = localStorage.getItem('sidebar-collapsed');
+        return saved ? JSON.parse(saved) : false;
+    });
 
-    useEffect(() => {
-        localStorage.setItem('sidebar-collapsed', JSON.stringify(collapsed))
-    }, [collapsed])
+    // фильтры — локальные поля формы
+    const [filterInputs, setFilterInputs] = useState({
+        from: '', to: '', pointId: '', employeeId: ''
+    });
+    // собственно фильтры, по которым делаем запрос
+    const [filters, setFilters] = useState({ take: 10 });
 
+    // сохранить состояние сайдбара
     useEffect(() => {
-        fetchRecentAttempts(10).then(data => {
-            setAttempts(data)
-            setCounts(c => ({ ...c, attempts: data.length }))
-        })
-        setCounts(c => ({ ...c, employees: 128, devices: 43 }))
-    }, [])
+        localStorage.setItem('sidebar-collapsed', JSON.stringify(collapsed));
+    }, [collapsed]);
+
+    // при изменении filters — заново фетчим данные
+    useEffect(() => {
+        // stats
+        fetchStats().then(dto => {
+            setCounts(c => ({
+                ...c,
+                employees: dto.employeesCount,
+                devices: dto.devicesCount
+            }));
+        });
+        // attempts
+        fetchAttempts(filters).then(arr => {
+            setAttempts(arr);
+            setCounts(c => ({ ...c, attempts: arr.length }));
+        });
+    }, [filters]);
+
+    function onApply() {
+        setFilters({
+            from: filterInputs.from || undefined,
+            to: filterInputs.to || undefined,
+            pointId: filterInputs.pointId ? Number(filterInputs.pointId) : undefined,
+            employeeId: filterInputs.employeeId ? Number(filterInputs.employeeId) : undefined,
+            take: 10
+        });
+    }
+    function onReset() {
+        setFilterInputs({ from: '', to: '', pointId: '', employeeId: '' });
+        setFilters({ take: 10 });
+    }
 
     return (
         <div className="Dashboard">
             <header className="Header">
-                {/* Логотип */}
                 <img src={logo} alt="НАТК" className="Header-logo" />
                 <span className="Header-title">НАТК</span>
             </header>
@@ -41,7 +70,6 @@ export default function Dashboard() {
                     >
                         <span /><span /><span />
                     </button>
-
                     <nav>
                         <a href="#">Сотрудники</a>
                         <a href="#">Устройства</a>
@@ -60,8 +88,42 @@ export default function Dashboard() {
                     </section>
 
                     <section className="Filters">
-                        Фильтры: Дата, точка прохода, Сотрудник <button>Применить</button>{' '}
-                        <button>Сбросить</button>
+                        <label>
+                            From: <input
+                                type="date"
+                                name="from"
+                                value={filterInputs.from}
+                                onChange={e => setFilterInputs(fi => ({ ...fi, from: e.target.value }))}
+                            />
+                        </label>{' '}
+                        <label>
+                            To: <input
+                                type="date"
+                                name="to"
+                                value={filterInputs.to}
+                                onChange={e => setFilterInputs(fi => ({ ...fi, to: e.target.value }))}
+                            />
+                        </label>{' '}
+                        <label>
+                            Point ID: <input
+                                type="number"
+                                name="pointId"
+                                value={filterInputs.pointId}
+                                onChange={e => setFilterInputs(fi => ({ ...fi, pointId: e.target.value }))}
+                                style={{ width: '4rem' }}
+                            />
+                        </label>{' '}
+                        <label>
+                            Emp ID: <input
+                                type="number"
+                                name="employeeId"
+                                value={filterInputs.employeeId}
+                                onChange={e => setFilterInputs(fi => ({ ...fi, employeeId: e.target.value }))}
+                                style={{ width: '4rem' }}
+                            />
+                        </label>{' '}
+                        <button onClick={onApply}>Применить</button>{' '}
+                        <button onClick={onReset}>Сбросить</button>
                     </section>
 
                     <section className="TableWrapper">
@@ -93,5 +155,5 @@ export default function Dashboard() {
                 </main>
             </div>
         </div>
-    )
+    );
 }
