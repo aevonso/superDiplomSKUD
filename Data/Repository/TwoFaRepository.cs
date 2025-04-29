@@ -1,5 +1,4 @@
-﻿// Data/Repository/TwoFaRepository.cs
-using AuntificationDomain;
+﻿using AuntificationDomain;
 using Data.Tables;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -13,7 +12,6 @@ namespace Data.Repository
 
         public TwoFaRepository(Connection connection)
         {
-            // Сразу проверяем на null и сохраняем
             _connection = connection
                 ?? throw new ArgumentNullException(nameof(connection));
         }
