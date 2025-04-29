@@ -1,0 +1,160 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body, #root {
+    height: 100%;
+    font-family: 'Roboto', Arial, sans-serif;
+}
+
+/* ============ Layout ============ */
+.Dashboard {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Header */
+.Header {
+    display: flex;
+    align-items: center;
+    background: #4a90e2;
+    padding: 0 1rem;
+    height: 56px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 10;
+}
+
+/* Logo in header */
+.Header-logo {
+    height: 2rem; /* как в примере Login */
+    margin-right: 0.5rem; /* отодвигает бургер вправо */
+}
+
+.Header-title {
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+
+
+/* Общий стиль для бургер-кнопок */
+.Burger {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 24px;
+    height: 18px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+    .Burger span {
+        display: block;
+        height: 2px;
+        background: #fff;
+        border-radius: 1px;
+    }
+
+/* Sidebar burger darker lines */
+.SidebarBurger span {
+    background: #333;
+}
+
+/* Body: sidebar + main */
+.Body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Sidebar */
+.Sidebar {
+    width: 200px;
+    background: #F5F5F5;
+    transition: width 0.3s, background 0.3s, padding 0.3s;
+    padding: 1rem;
+    overflow: visible;
+}
+
+    .Sidebar.collapsed {
+        width: 48px;
+        padding: 0.5rem 0;
+        background: transparent;
+    }
+
+        .Sidebar.collapsed nav {
+            display: none;
+        }
+
+    /* Sidebar nav links */
+    .Sidebar nav a {
+        display: block;
+        padding: 0.5rem 0;
+        color: #000;
+        text-decoration: none;
+    }
+
+/* Main content */
+.Main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #FFF;
+}
+
+/* Stats cards */
+.Stats {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.Card {
+    background: #EEEEEE;
+    padding: 1rem;
+    flex: 1;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Filters */
+.Filters {
+    background: #E0E0E0;
+    padding: 0.5rem 1rem;
+}
+
+/* Table */
+.TableWrapper {
+    flex: 1;
+    padding: 1rem;
+    overflow: auto;
+}
+
+.AttemptsTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .AttemptsTable th,
+    .AttemptsTable td {
+        border: 1px solid #999;
+        padding: 0.5rem;
+        text-align: left;
+    }
+
+/* Status colors */
+.Success {
+    color: green;
+}
+
+.Fail {
+    color: red;
+}
