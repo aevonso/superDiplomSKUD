@@ -105,12 +105,21 @@ builder.Services.AddScoped<
     Validate2FaQueryService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IMobileDeviceRepository, MobileDeviceRepository>();
 
 builder.Services.AddScoped<IAccessAttemptRepository, AccessAttemptRepository>();
 builder.Services.AddScoped<
     IQueryService<GetRecentAttemptsQuery, IEnumerable<AttemptDto>>,
     GetRecentAttemptsQueryService>();
 
+builder.Services.AddScoped<
+    IQueryService<GetDashboardStatsQuery, DashboardStatsDto>,
+    GetDashboardStatsQueryService>();
+
+builder.Services.AddScoped<
+    IQueryService<GetFilteredAttemptsQuery, IEnumerable<AttemptDto>>,
+    GetFilteredAttemptsQueryService>();
 
 var app = builder.Build();
 
