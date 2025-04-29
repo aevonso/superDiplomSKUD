@@ -11,5 +11,17 @@ namespace DashboardDomain.IRepository
     {
         Task<List<AttemptDto>> GetRecentAttemptsAsync(int take);
 
+        //метод для фильтров
+        Task<List<AttemptDto>> GetFilteredAttemptsAsync(
+            DateTime? from,
+            DateTime? to,
+            int? pointId,
+            int? employeeId,
+            int take
+            );
+
+        //метод для обшего кол-ва попыток(без фильтра)
+        Task<int> CountAttemptAsync();
+
     }
 }

@@ -3,6 +3,7 @@ using DashboardDomain.Queries.Object;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using serviceSKUD;
+using System;
 using System.Collections.Generic;
 
 namespace serverSKUD.Controllers
@@ -11,20 +12,37 @@ namespace serverSKUD.Controllers
     [Route("api/[controller]")]
     public class DashboardController : ControllerBase
     {
-        private readonly IQueryService<GetRecentAttemptsQuery, IEnumerable<AttemptDto>> _getAttempts;
+        private readonly IQueryService<GetDashboardStatsQuery, DashboardStatsDto> _statsSvc;
+        private readonly IQueryService<GetFilteredAttemptsQuery, IEnumerable<AttemptDto>> _attSvc;
 
         public DashboardController(
-            IQueryService<GetRecentAttemptsQuery, IEnumerable<AttemptDto>> getAttempts)
+            IQueryService<GetDashboardStatsQuery, DashboardStatsDto> statsSvc,
+            IQueryService<GetFilteredAttemptsQuery, IEnumerable<AttemptDto>> attSvc)
         {
-            _getAttempts = getAttempts;
+            _statsSvc = statsSvc;
+            _attSvc = attSvc;
         }
 
-        [HttpGet("attempts")]
-        public ActionResult<IEnumerable<AttemptDto>> GetAttempts([FromQuery] int take = 10)
+
+        [HttpGet("stats")]
+        public ActionResult<DashboardStatsDto> GetStats()
         {
-            var query = new GetRecentAttemptsQuery(take);
-            var result = _getAttempts.Execute(query);
-            return Ok(result);
+            var dto = _statsSvc.Execute(new GetDashboardStatsQuery());
+            return Ok(dto);
+        }
+
+
+        [HttpGet("attempts")]
+        public ActionResult<IEnumerable<AttemptDto>> GetAttempts(
+            [FromQuery] DateTime? from,
+            [FromQuery] DateTime? to,
+            [FromQuery] int? pointId,
+            [FromQuery] int? employeeId,
+            [FromQuery] int take = 10)
+        {
+            var query = new GetFilteredAttemptsQuery(from, to, pointId, employeeId, take);
+            var list = _attSvc.Execute(query);
+            return Ok(list);
         }
     }
 }
