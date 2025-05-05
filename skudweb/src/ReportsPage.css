@@ -1,0 +1,167 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body, #root {
+    height: 100%;
+    font-family: 'Roboto', Arial, sans-serif;
+}
+
+.Dashboard {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.Header {
+    display: flex;
+    align-items: center;
+    background: #0057E7;
+    padding: 0 1rem;
+    height: 56px;
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+.Header-logo {
+    height: 2rem;
+    margin-right: 0.5rem;
+}
+
+.Body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.Sidebar {
+    width: 200px;
+    background: #F5F5F5;
+    padding: 1rem;
+    transition: width .3s;
+    box-sizing: border-box;
+}
+
+    .Sidebar.collapsed {
+        width: 48px;
+        padding: .5rem 0;
+        background: transparent;
+    }
+
+        .Sidebar.collapsed nav {
+            display: none;
+        }
+
+    .Sidebar nav a {
+        display: block;
+        padding: .5rem 0;
+        color: #000;
+        text-decoration: none;
+    }
+
+        .Sidebar nav a.active {
+            color: #0057E7;
+            font-weight: 500;
+        }
+
+.Burger {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 24px;
+    height: 18px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 1rem;
+}
+
+    .Burger span {
+        display: block;
+        height: 2px;
+        background: #333;
+        border-radius: 1px;
+    }
+
+.Main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #FFF;
+}
+
+.ReportsContainer {
+    padding: 2rem;
+}
+
+    .ReportsContainer h1 {
+        font-size: 1.75rem;
+        margin-bottom: .5rem;
+    }
+
+.Subtitle {
+    color: #555;
+    margin-bottom: 1.5rem;
+}
+
+.CheckboxGroup {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+    .CheckboxGroup label {
+        display: flex;
+        align-items: center;
+        font-size: 1rem;
+        cursor: pointer;
+    }
+
+    .CheckboxGroup input[type="checkbox"] {
+        width: 1rem;
+        height: 1rem;
+        margin-right: 0.5rem;
+        accent-color: #0057E7;
+    }
+
+.FormatOptions {
+    display: flex;
+    gap: 2rem;
+}
+
+.FormatCard {
+    width: 180px;
+    height: 200px;
+    background: #fff;
+    border: 1px solid #DDD;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: transform .1s, box-shadow .2s;
+}
+
+    .FormatCard:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+.FormatImage {
+    width: 96px;
+    height: 96px;
+    margin-bottom: 1rem;
+}
+
+.FormatLabel {
+    font-size: 1rem;
+    font-weight: 500;
+}
