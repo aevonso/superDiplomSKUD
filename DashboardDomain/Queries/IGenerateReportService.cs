@@ -1,15 +1,14 @@
 ﻿using DashboardDomain.Queries.Object;
+using serviceSKUD;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DashboardDomain.IRepository
+namespace DashboardDomain.Queries
 {
-    public interface IEmployeeRepository
+    public interface IGenerateReportService : IQueryService<ReportCriteria, ReportResult>
     {
-        Task<int> CountAsync();
-        Task<List<EmployeeDto>> GetAllAsync();
     }
 }

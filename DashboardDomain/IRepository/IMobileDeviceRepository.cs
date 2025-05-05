@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DashboardDomain.Queries.Object;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,5 +11,6 @@ namespace DashboardDomain.IRepository
     {
         //число активных мобилок 
         Task<int> CountAsync(bool onlyActive);
+        Task<List<MobileDeviceDto>> GetAllAsync(bool onlyActive);
     }
 }

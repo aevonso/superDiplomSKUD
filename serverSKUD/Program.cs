@@ -87,6 +87,9 @@ builder.Services.AddDbContext<Connection>(opt =>
     opt.UseNpgsql(connString)
 );
 
+//генерация отчетов
+builder.Services.AddScoped<IGenerateReportService, GenerateReportQueryService>();
+
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IQueryService<EntryDto, AuthResult>, AutorizationQueryService>();
 builder.Services.AddScoped<IQueryService<RefreshDto, AuthResult>, RefreshQueryService>();
