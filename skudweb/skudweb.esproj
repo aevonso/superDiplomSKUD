@@ -7,5 +7,8 @@
     <ShouldRunBuildScript>false</ShouldRunBuildScript>
     <!-- Folder where production build objects will be placed -->
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
+    <StartupCommandWorkingDirectory>C:\Users\Oddone\Desktop\superDiplomSKUD\skudweb</StartupCommandWorkingDirectory>
+    <BuildCommand>C:\Users\Oddone\Desktop\superDiplomSKUD\skudweb</BuildCommand>
+    <CleanCommand>C:\Users\Oddone\Desktop\superDiplomSKUD\skudweb</CleanCommand>
   </PropertyGroup>
 </Project>

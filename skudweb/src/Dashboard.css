@@ -66,6 +66,12 @@ html, body, #root {
 /* Sidebar burger darker lines */
 .SidebarBurger span {
     background: #333;
+
+
+}
+.Sidebar nav a.active {
+    color: #0057E7;
+    font-weight: 500;
 }
 
 /* Body: sidebar + main */

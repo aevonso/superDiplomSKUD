@@ -73,9 +73,9 @@ export default function Dashboard() {
                     <nav>
                         <a href="#">Сотрудники</a>
                         <a href="#">Устройства</a>
-                        <a href="#">Пропуски</a>
-                        <a href="#">Лог событий</a>
-                        <a href="#">Отчёты</a>
+                        <a href="#"> Пропуски</a>
+                        <a href="/dashboard" className="active">Лог событий</a>
+                        <a href="/reports">Отчёты</a>
                         <a href="#">Настройки</a>
                     </nav>
                 </aside>
