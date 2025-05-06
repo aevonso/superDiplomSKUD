@@ -59,7 +59,7 @@ export default function ReportsPage() {
                         <a href="/employees">Сотрудники</a>
                         <a href="/devices">Устройства</a>
                         <a href="/passes">Пропуски</a>
-                        <a href="/logs">Лог событий</a>
+                        <a href="/dashboard">Лог событий</a>
                         <a href="/reports" className="active">Отчёты</a>
                         <a href="/settings">Настройки</a>
                     </nav>
