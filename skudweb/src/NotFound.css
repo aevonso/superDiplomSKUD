@@ -1,0 +1,67 @@
+/* src/NotFound.css */
+.NotFoundPage {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.Header {
+    display: flex;
+    align-items: center;
+    background: #0057E7;
+    color: white;
+    padding: 0 1rem;
+    height: 56px;
+}
+
+.Header-logo {
+    width: 32px;
+    height: 32px;
+    margin-right: 0.5rem;
+}
+
+.Header-title {
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+.NF-Body {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fafafa;
+}
+
+.NF-Content {
+    text-align: center;
+}
+
+.NF-Icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.NF-Content h1 {
+    font-size: 3rem;
+    margin: 0.5rem 0;
+}
+
+.NF-Content p {
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.NF-Button {
+    padding: 0.75rem 1.5rem;
+    background: #0057E7;
+    color: white;
+    border: none;
+    border-radius: 24px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+    .NF-Button:hover {
+        background: #0041b3;
+    }

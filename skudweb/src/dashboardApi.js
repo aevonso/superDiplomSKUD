@@ -3,7 +3,7 @@ import apiClient from './apiClient';
 
 export async function fetchStats() {
     const resp = await apiClient.get('/api/Dashboard/stats');
-    return resp.data;  
+    return resp.data;
 }
 
 /**
@@ -18,6 +18,10 @@ export async function fetchAttempts(params = {}) {
     if (params.employeeId) q.append('employeeId', String(params.employeeId));
     q.append('take', String(params.take ?? 10));
 
-    const resp = await apiClient.get(`/api/Dashboard/attempts?${q.toString()}`);
+    // именно так:
+    const resp = await apiClient.get(
+        `/api/Dashboard/attempts?${q.toString()}`
+    );
+
     return resp.data;  // Array<AttemptDto>
 }

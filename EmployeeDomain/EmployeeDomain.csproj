@@ -4,12 +4,10 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MailKit" Version="4.11.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.4" />
+    <ProjectReference Include="..\serviceSKUD\serviceSKUD.csproj" />
   </ItemGroup>
 
 </Project>

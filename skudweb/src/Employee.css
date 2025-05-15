@@ -1,0 +1,138 @@
+
+.Main h1 {
+    font-size: 1.5rem;
+    margin: 1rem;
+}
+
+.Main h2 {
+    font-size: 1.25rem;
+    margin: 0 1rem 1rem;
+    color: #555;
+}
+
+.NavigationLinks {
+    display: flex;
+    gap: 1.5rem;
+    margin: 0 1rem 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+    .NavigationLinks a {
+        color: #333;
+        text-decoration: none;
+    }
+
+        .NavigationLinks a:hover {
+            color: #4a90e2;
+        }
+
+.Filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f5f5f5;
+    border-radius: 4px;
+    margin: 1rem 0;
+}
+
+    .Filters label {
+        display: flex;
+        flex-direction: column;
+        font-weight: 500;
+    }
+
+    .Filters input {
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    .Filters button {
+        align-self: flex-end;
+        padding: 0.5rem 1rem;
+        background: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+        .Filters button:hover {
+            background: #0069d9;
+        }
+.Btn.add {
+    padding: 0.5rem 1rem;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+    margin-left: auto;
+}
+
+    .Btn.add:hover {
+        background: #218838;
+    }
+
+.TableWrapper {
+    margin: 0 1rem;
+    overflow-x: auto;
+}
+
+.EmployeesTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .EmployeesTable th,
+    .EmployeesTable td {
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        text-align: left;
+    }
+
+    .EmployeesTable th {
+        background: #f0f0f0;
+        font-weight: 600;
+    }
+
+    .EmployeesTable tr:nth-child(even) {
+        background: #fafafa;
+    }
+
+    .EmployeesTable tr:hover {
+        background-color: #f0f0f0;
+    }
+.AddButton {
+    margin-left: auto;
+    padding: 0.5rem 1rem;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+    .AddButton:hover {
+        background: #218838;
+    }
+
+.AvatarCell {
+    width: 50px;
+    text-align: center;
+}
+
+.TableAvatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.TableAvatarPlaceholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ddd;
+    display: inline-block;
+}

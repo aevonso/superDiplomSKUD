@@ -1,0 +1,199 @@
+/* общий сброс */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0
+}
+
+body, #root {
+    font-family: Arial,sans-serif;
+    height: 100%
+}
+
+/* Header */
+.Header {
+    display: flex;
+    align-items: center;
+    height: 56px;
+    padding: 0 1rem;
+    background: #0057E7;
+    color: #fff;
+}
+
+.BackLink {
+    color: #fff;
+    text-decoration: none;
+    margin-right: 1rem
+}
+
+.Header-logo {
+    height: 2rem;
+    margin-right: .5rem
+}
+
+.Header-title {
+    font-size: 1.25rem;
+    font-weight: 500
+}
+
+/* Флекс-контейнер страницы */
+.AddEmployee, .EmployeeCard {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.FormMain, .Body {
+    flex: 1;
+    overflow: auto;
+    background: #FAFCFF;
+}
+
+/* Секция фото */
+.AvatarSection, .PhotoBlock {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.PhotoBlock {
+    width: 240px;
+    height: 240px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f5f5f5;
+    margin-bottom: 1rem;
+}
+
+    .PhotoBlock .Photo {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+.PhotoPlaceholder {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #888;
+    font-size: 1rem;
+}
+
+.AvatarButtons button {
+    width: 100%;
+    margin-bottom: .5rem;
+}
+
+/* Основная форма */
+.FormBlock, .CardContent {
+    max-width: 900px;
+    margin: 1rem auto;
+    display: flex;
+    gap: 2rem;
+}
+
+.FormBlock {
+    flex-direction: column;
+}
+
+.FieldsBlock {
+    flex: 1;
+}
+
+/* Поле ввода */
+.Field {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+    .Field label {
+        width: 150px;
+        font-weight: 500;
+    }
+
+    .Field input, .Field select {
+        flex: 1;
+        padding: .5rem;
+        border: 1px solid #CCC;
+        border-radius: 4px;
+        background: #F5F5F5;
+    }
+
+/* Паспорт */
+.PassportSection {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1rem;
+}
+
+.PassportField {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+.PassportNumbers {
+    display: flex;
+    gap: .5rem;
+}
+
+    .PassportNumbers input {
+        width: 3rem;
+        text-align: center;
+        padding: .5rem;
+        border: 1px solid #CCC;
+        border-radius: 4px;
+        background: #F5F5F5;
+    }
+
+/* Кнопки */
+.ActionButtons, .AddEmployee .ActionButtons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.Btn {
+    padding: .5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+    .Btn.save {
+        background: #4CAF50;
+        color: #fff;
+    }
+
+        .Btn.save:hover {
+            background: #45A049;
+        }
+
+    .Btn.delete {
+        background: #F44336;
+        color: #fff;
+    }
+
+        .Btn.delete:hover {
+            background: #D32F2F;
+        }
+
+    .Btn.upload {
+        background: #1976D2;
+        color: #fff;
+        margin-bottom: .5rem;
+    }
+
+        .Btn.upload:hover {
+            background: #1565C0;
+        }
+
+.Error {
+    color: #F44336;
+    margin-top: .5rem;
+}
