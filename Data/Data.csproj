@@ -4,6 +4,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,6 +28,7 @@
     <ProjectReference Include="..\AuntificationDomain\AuntificationDomain.csproj" />
     <ProjectReference Include="..\AutorizationDomain\AutorizationDomain.csproj" />
     <ProjectReference Include="..\DashboardDomain\DashboardDomain.csproj" />
+    <ProjectReference Include="..\EmployeeDomain\EmployeeDomain.csproj" />
   </ItemGroup>
 
 </Project>

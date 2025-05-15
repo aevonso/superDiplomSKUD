@@ -1,4 +1,22 @@
 <Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.2191419">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|AnyCPU">
+      <Configuration>Debug</Configuration>
+      <Platform>AnyCPU</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|AnyCPU">
+      <Configuration>Release</Configuration>
+      <Platform>AnyCPU</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
   <PropertyGroup>
     <StartupCommand>npm run dev</StartupCommand>
     <JavaScriptTestRoot>src\</JavaScriptTestRoot>
@@ -8,7 +26,8 @@
     <!-- Folder where production build objects will be placed -->
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
     <StartupCommandWorkingDirectory>C:\Users\Oddone\Desktop\superDiplomSKUD\skudweb</StartupCommandWorkingDirectory>
-    <BuildCommand>C:\Users\Oddone\Desktop\superDiplomSKUD\skudweb</BuildCommand>
+    <BuildCommand>npm run dev</BuildCommand>
     <CleanCommand>C:\Users\Oddone\Desktop\superDiplomSKUD\skudweb</CleanCommand>
+    <PackageJsonDirectory>C:\Users\Oddone\Desktop\superDiplomSKUD\skudweb</PackageJsonDirectory>
   </PropertyGroup>
 </Project>

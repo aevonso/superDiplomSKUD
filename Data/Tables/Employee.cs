@@ -56,6 +56,8 @@ namespace Data.Tables
 
             public string? RefreshToken { get; set; }
             public DateTime? RefreshTokenExpiryTime { get; set; }
+
+            public byte[]? Avatar { get; set; }
         }
 
     }

@@ -71,12 +71,12 @@ export default function Dashboard() {
                         <span /><span /><span />
                     </button>
                     <nav>
-                        <a href="#">Сотрудники</a>
-                        <a href="#">Устройства</a>
-                        <a href="#"> Пропуски</a>
+                        <a href="/employees">Сотрудники</a>
+                        <a href="/devices">Устройства</a>
+                        <a href="/passes"> Пропуски</a>
                         <a href="/dashboard" className="active">Лог событий</a>
                         <a href="/reports">Отчёты</a>
-                        <a href="#">Настройки</a>
+                        <a href="/setting">Настройки</a>
                     </nav>
                 </aside>
 

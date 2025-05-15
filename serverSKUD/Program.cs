@@ -21,6 +21,7 @@ using AuntificationDomain.Queries;
 using DashboardDomain.IRepository;
 using DashboardDomain.Queries.Object;
 using DashboardDomain.Queries;
+using EmployeeDomain.Queiries;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -90,6 +91,25 @@ builder.Services.AddDbContext<Connection>(opt =>
 //генерация отчетов
 builder.Services.AddScoped<IGenerateReportService, GenerateReportQueryService>();
 
+// Репозиторий из EmployeeDomain.IRepository
+builder.Services.AddScoped<EmployeeDomain.IRepository.IEmployeeRepository, Data.Repository.EmployeePageRepository>();
+
+// QueryService’ы из EmployeeDomain.Queiries
+
+builder.Services.AddScoped<
+    serviceSKUD.IQueryService<EmployeeDomain.Queiries.GetEmployeeByIdQuery, EmployeeDomain.Queiries.Object.EmployeeDto>,
+    EmployeeDomain.Queiries.GetEmployeeByIdQueryService>();
+
+builder.Services.AddScoped<
+    serviceSKUD.IQueryService<EmployeeDomain.Queiries.GetEmployeesQuery, IEnumerable<EmployeeDomain.Queiries.Object.EmployeeDto>>,
+    EmployeeDomain.Queiries.GetEmployeesQueryService>();
+
+builder.Services.AddScoped<
+    serviceSKUD.IQueryService<EmployeeDomain.Queiries.GetEmployeesCountQuery, int>,
+    EmployeeDomain.Queiries.GetEmployeesCountQueryService>();
+
+
+
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IQueryService<EntryDto, AuthResult>, AutorizationQueryService>();
 builder.Services.AddScoped<IQueryService<RefreshDto, AuthResult>, RefreshQueryService>();
@@ -98,6 +118,7 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddScoped<IQrRepository, QrRepository>();
 builder.Services.AddScoped<ICommandService<GenerateQrDto>, GenerateQrCommandService>();
+
 
 builder.Services.AddScoped<I2FaRepository, TwoFaRepository>();
 builder.Services.AddScoped<
