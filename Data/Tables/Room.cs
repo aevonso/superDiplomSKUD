@@ -14,12 +14,14 @@ namespace Data.Tables
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Required]
-        [MaxLength(10)]
-        public string Name { get; set; } = null!;
+        [Required, MaxLength(10)]
+        public string Name { get; set; } = null!;  // "355", "366" и т.п.
 
-        [ForeignKey("Division")]
-        public int DivisionId { get; set; }
-        public Division Division { get; set; } = null!;
+        [ForeignKey("Floor")]
+        public int FloorId { get; set; }
+        public Floor Floor { get; set; } = null!;
+
+        // Навигация: комната —> несколько записей в матрице
+        public ICollection<AccessMatrix> AccessEntries { get; set; } = new List<AccessMatrix>();
     }
 }

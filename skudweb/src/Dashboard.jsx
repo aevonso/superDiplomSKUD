@@ -73,7 +73,7 @@ export default function Dashboard() {
                     <nav>
                         <a href="/employees">Сотрудники</a>
                         <a href="/devices">Устройства</a>
-                        <a href="/passes"> Пропуски</a>
+                        <a href="/accessmatrix"> Матрица доступа</a>
                         <a href="/dashboard" className="active">Лог событий</a>
                         <a href="/reports">Отчёты</a>
                         <a href="/setting">Настройки</a>

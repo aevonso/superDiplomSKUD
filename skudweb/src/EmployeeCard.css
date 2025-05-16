@@ -2,12 +2,12 @@
 * {
     box-sizing: border-box;
     margin: 0;
-    padding: 0
+    padding: 0;
 }
 
 body, #root {
-    font-family: Arial,sans-serif;
-    height: 100%
+    font-family: Arial, sans-serif;
+    height: 100%;
 }
 
 /* Header */
@@ -23,20 +23,20 @@ body, #root {
 .BackLink {
     color: #fff;
     text-decoration: none;
-    margin-right: 1rem
+    margin-right: 1rem;
 }
 
 .Header-logo {
     height: 2rem;
-    margin-right: .5rem
+    margin-right: .5rem;
 }
 
 .Header-title {
     font-size: 1.25rem;
-    font-weight: 500
+    font-weight: 500;
 }
 
-/* Флекс-контейнер страницы */
+/* общий контейнер страниц */
 .AddEmployee, .EmployeeCard {
     display: flex;
     flex-direction: column;
@@ -49,23 +49,26 @@ body, #root {
     background: #FAFCFF;
 }
 
-/* Секция фото */
+/* Фото-блок */
 .AvatarSection {
     display: flex;
     gap: 2rem;
     align-items: flex-start;
+    flex-wrap: wrap;
     margin-bottom: 1rem;
-    flex-wrap: wrap; /* чтобы на узких экранах фото переносилось */
 }
 
+/* Увеличили размер PhotoBlock с 240px до 360px */
 .PhotoBlock {
-    flex: 1 1 50%; /* займет до 50% ширины родителя */
-    max-width: 600px; /* не растягивать больше */
-    aspect-ratio: 4 / 3; /* сохраняет пропорции 4:3 */
+    width: 360px;
+    height: 360px;
     border: 2px solid #ddd;
     border-radius: 8px;
     overflow: hidden;
     background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
     .PhotoBlock .Photo {
@@ -74,13 +77,7 @@ body, #root {
         object-fit: cover;
     }
 
-/* Плейсхолдер, если нет фото */
 .PhotoPlaceholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     color: #888;
     font-size: 1rem;
 }
@@ -88,30 +85,25 @@ body, #root {
 .AvatarButtons {
     display: flex;
     flex-direction: column;
-    width: 400px; /* совпадает с шириной PhotoBlock */
-    gap: 0.5rem;
+    gap: .5rem;
 }
 
-/* Основная форма */
+    .AvatarButtons .Btn {
+        width: 360px; /* совпадает с шириной PhotoBlock */
+    }
+
+/* Форма */
 .FormBlock, .CardContent {
-    max-width: 900px;
+    max-width: 980px; /* чуть увеличили максимальную ширину */
     margin: 1rem auto;
     display: flex;
     gap: 2rem;
-}
-
-.FormBlock {
-    flex-direction: column;
-}
-.AvatarButtons .Btn {
-    width: 100%;
 }
 
 .FieldsBlock {
     flex: 1;
 }
 
-/* Поле ввода */
 .Field {
     display: flex;
     align-items: center;
@@ -160,7 +152,7 @@ body, #root {
     }
 
 /* Кнопки */
-.ActionButtons, .AddEmployee .ActionButtons {
+.ActionButtons {
     display: flex;
     justify-content: flex-end;
     gap: 1rem;
@@ -195,13 +187,13 @@ body, #root {
     .Btn.upload {
         background: #1976D2;
         color: #fff;
-        margin-bottom: .5rem;
     }
 
         .Btn.upload:hover {
             background: #1565C0;
         }
 
+/* Сообщение об ошибке */
 .Error {
     color: #F44336;
     margin-top: .5rem;
