@@ -21,7 +21,6 @@ export default function AddEmployee() {
     const [posts, setPosts] = useState([]);
     const [avatarFile, setAvatarFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
-    const [error, setError] = useState('');
 
     useEffect(() => {
         fetchDivisions().then(setDivisions);
@@ -29,6 +28,7 @@ export default function AddEmployee() {
     }, []);
 
     const onChange = (f, v) => setForm(s => ({ ...s, [f]: v }));
+
     const onPhoneChange = e => {
         let v = e.target.value.replace(/\D/g, '');
         if (!v.startsWith('7')) v = '7' + v;
@@ -44,36 +44,45 @@ export default function AddEmployee() {
 
     const handleSubmit = async e => {
         e.preventDefault();
-        setError('');
+
+        // Клиентская проверка
         if (!form.login || !form.password) {
-            setError('Логин и пароль — обязательно');
+            await Swal.fire({
+                icon: 'error',
+                title: 'Логин и пароль обязательны',
+            });
             return;
         }
+
         try {
             const payload = {
                 ...form,
                 divisionId: Number(form.divisionId),
                 postId: Number(form.postId)
             };
+
             const created = await createEmployee(payload);
+
             if (avatarFile) {
                 await uploadAvatar(created.id, avatarFile);
             }
+
             await Swal.fire({
                 icon: 'success',
                 title: 'Сотрудник создан',
                 toast: true,
                 position: 'top-end',
                 showConfirmButton: false,
-                timer: 2000
+                timer: 1500
             });
+
             navigate('/employees');
         } catch (err) {
-            const data = err.response?.data;
-            setError(data?.errors
-                ? Object.values(data.errors).flat().join('; ')
-                : 'Ошибка при создании'
-            );
+            const msg = err.response?.data?.message || 'Ошибка при создании';
+            await Swal.fire({
+                icon: 'error',
+                title: msg,
+            });
         }
     };
 
@@ -87,6 +96,7 @@ export default function AddEmployee() {
 
             <main className="FormMain">
                 <form onSubmit={handleSubmit} className="FormBlock">
+                    {/* Фото */}
                     <div className="AvatarSection">
                         <div className="PhotoBlock">
                             {previewUrl
@@ -115,19 +125,15 @@ export default function AddEmployee() {
                         </div>
                     </div>
 
-                    {[
-                        ['lastName', 'Фамилия'],
-                        ['firstName', 'Имя'],
-                        ['patronymic', 'Отчество'],
-                        ['email', 'Email']
-                    ].map(([f, label]) => (
+                    {/* Поля */}
+                    {[['lastName', 'Фамилия'], ['firstName', 'Имя'], ['patronymic', 'Отчество'], ['email', 'Email']].map(([f, label]) => (
                         <div className="Field" key={f}>
                             <label>{label}:</label>
                             <input
                                 type={f === 'email' ? 'email' : 'text'}
+                                required
                                 value={form[f]}
                                 onChange={e => onChange(f, e.target.value)}
-                                required
                             />
                         </div>
                     ))}
@@ -135,9 +141,9 @@ export default function AddEmployee() {
                     <div className="Field">
                         <label>Логин:</label>
                         <input
+                            required
                             value={form.login}
                             onChange={e => onChange('login', e.target.value)}
-                            required
                         />
                     </div>
                     <div className="Field">
@@ -145,47 +151,43 @@ export default function AddEmployee() {
                         <input
                             type="password"
                             minLength={6}
+                            required
                             value={form.password}
                             onChange={e => onChange('password', e.target.value)}
-                            required
                         />
                     </div>
                     <div className="Field">
                         <label>Телефон:</label>
                         <input
                             type="tel"
+                            required
+                            maxLength={12}
                             value={form.phoneNumber}
                             onChange={onPhoneChange}
-                            placeholder="+7 (___)___-__-__"
-                            maxLength={12}
-                            required
                         />
                     </div>
 
                     <div className="Field">
                         <label>Подразделение:</label>
                         <select
+                            required
                             value={form.divisionId}
                             onChange={e => onChange('divisionId', e.target.value)}
-                            required
                         >
                             <option value="">— выберите —</option>
-                            {divisions.map(d => (
-                                <option key={d.id} value={d.id}>{d.name}</option>
-                            ))}
+                            {divisions.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
                         </select>
                     </div>
+
                     <div className="Field">
                         <label>Должность:</label>
                         <select
+                            required
                             value={form.postId}
                             onChange={e => onChange('postId', e.target.value)}
-                            required
                         >
                             <option value="">— выберите —</option>
-                            {posts.map(p => (
-                                <option key={p.id} value={p.id}>{p.name}</option>
-                            ))}
+                            {posts.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                         </select>
                     </div>
 
@@ -193,24 +195,22 @@ export default function AddEmployee() {
                         <div className="PassportField">
                             <label>Серия паспорта:</label>
                             <input
+                                required
+                                maxLength={4}
                                 value={form.passportSeria}
                                 onChange={e => onChange('passportSeria', e.target.value.replace(/\D/g, '').slice(0, 4))}
-                                maxLength={4}
-                                required
                             />
                         </div>
                         <div className="PassportField">
                             <label>Номер паспорта:</label>
                             <input
+                                required
+                                maxLength={6}
                                 value={form.passportNumber}
                                 onChange={e => onChange('passportNumber', e.target.value.replace(/\D/g, '').slice(0, 6))}
-                                maxLength={6}
-                                required
                             />
                         </div>
                     </div>
-
-                    {error && <div className="Error">{error}</div>}
 
                     <div className="ActionButtons">
                         <button type="submit" className="Btn save">Создать</button>

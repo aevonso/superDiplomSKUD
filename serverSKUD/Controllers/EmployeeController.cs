@@ -91,6 +91,23 @@ namespace serverSKUD.Controllers
         [HttpPost]
         public async Task<ActionResult<Employee>> Create([FromBody] EmployeeCreateDto dto)
         {
+            // проверяем уникальность
+            if (await _db.Employees.AnyAsync(e => e.Email == dto.Email))
+                return BadRequest(new { message = "Email уже занят" });
+
+            if (await _db.Employees.AnyAsync(e => e.Login == dto.Login))
+                return BadRequest(new { message = "Login уже занят" });
+
+            if (await _db.Employees.AnyAsync(e => e.PhoneNumber == dto.PhoneNumber))
+                return BadRequest(new { message = "Телефон уже используется" });
+
+            if (await _db.Employees.AnyAsync(e =>
+                e.PassportSeria == dto.PassportSeria &&
+                e.PassportNumber == dto.PassportNumber))
+            {
+                return BadRequest(new { message = "Такой паспорт уже зарегистрирован" });
+            }
+
             var emp = new Employee
             {
                 LastName = dto.LastName,
@@ -120,14 +137,37 @@ namespace serverSKUD.Controllers
         public async Task<IActionResult> Update(int id, [FromBody] EmployeeUpdateDto dto)
         {
             var emp = await _db.Employees.FindAsync(id);
-            if (emp == null) return NotFound();
+            if (emp == null)
+                return NotFound();
 
-            // копируем поля из dto
+            // --- проверка уникальности email ---
+            if (await _db.Employees.AnyAsync(e => e.Email == dto.Email && e.Id != id))
+                return BadRequest(new { message = "Email уже занят" });
+
+            // проверка логина
+            if (await _db.Employees.AnyAsync(e => e.Login == dto.Login && e.Id != id))
+                return BadRequest(new { message = "Login уже занят" });
+
+            // проверка телефона
+            if (await _db.Employees.AnyAsync(e => e.PhoneNumber == dto.PhoneNumber && e.Id != id))
+                return BadRequest(new { message = "Телефон уже используется" });
+
+            // проверка паспорта
+            if (await _db.Employees.AnyAsync(e =>
+                e.Id != id &&
+                e.PassportSeria == dto.PassportSeria &&
+                e.PassportNumber == dto.PassportNumber))
+            {
+                return BadRequest(new { message = "Такой паспорт уже зарегистрирован" });
+            }
+
+            // обновляем данные
             emp.LastName = dto.LastName;
             emp.FirstName = dto.FirstName;
             emp.Patronymic = dto.Patronymic;
             emp.Email = dto.Email;
             emp.PhoneNumber = dto.PhoneNumber;
+            emp.Login = dto.Login;
             emp.DivisionId = dto.DivisionId;
             emp.PostId = dto.PostId;
             emp.PassportSeria = dto.PassportSeria;
@@ -135,6 +175,7 @@ namespace serverSKUD.Controllers
 
             _db.Entry(emp).State = EntityState.Modified;
             await _db.SaveChangesAsync();
+
             return NoContent();
         }
 
@@ -148,7 +189,6 @@ namespace serverSKUD.Controllers
 
             _db.Employees.Remove(emp);
             await _db.SaveChangesAsync();
-
             return NoContent();
         }
 
@@ -160,7 +200,6 @@ namespace serverSKUD.Controllers
             if (emp?.Avatar == null || emp.Avatar.Length == 0)
                 return NotFound();
 
-            // Отдаём как PNG
             return File(emp.Avatar, "image/png");
         }
 
@@ -175,7 +214,6 @@ namespace serverSKUD.Controllers
             using var ms = new MemoryStream();
             await file.CopyToAsync(ms);
             emp.Avatar = ms.ToArray();
-
             _db.Entry(emp).Property(e => e.Avatar).IsModified = true;
             await _db.SaveChangesAsync();
 

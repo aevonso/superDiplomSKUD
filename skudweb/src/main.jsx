@@ -9,6 +9,7 @@ import EmployeeList from './EmployeeList';
 import EmployeeCard from './EmployeeCard';
 import AddEmployee from './AddEmployee';
 import NotFound from './NotFound';
+import AccessMatrixPage from './AccessMatrixPage';
 import './App.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -21,6 +22,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route path="/employees" element={<EmployeeList />} />
             <Route path="/employees/new" element={<AddEmployee />} />
             <Route path="/employees/:id" element={<EmployeeCard />} />
+            <Route path="/accessmatrix" element={<AccessMatrixPage/> }/>
             <Route path="*" element={<NotFound />} />
         </Routes>
     </BrowserRouter>

@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace Data.Tables
 {
-    public class Division
+    public class Floor
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Required, MaxLength(150)]
-        public string Name { get; set; } = null!;
+        [Required, MaxLength(50)]
+        public string Name { get; set; } = null!; // "Этаж 1", ...
 
-        // Навигация: подразделение —> несколько должностей
-        public ICollection<Post> Posts { get; set; } = new List<Post>();
+        // Навигация: этаж —> несколько комнат
+        public ICollection<Room> Rooms { get; set; } = new List<Room>();
     }
 }

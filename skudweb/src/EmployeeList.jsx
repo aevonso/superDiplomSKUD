@@ -59,14 +59,15 @@ export default function EmployeeList() {
                         <span /><span /><span />
                     </button>
                     <nav>
-                        <Link to="/employees" className="active">Сотрудники</Link>
-                        <Link to="/devices">Устройства</Link>
-                        <Link to="/passes">Пропуски</Link>
-                        <Link to="/dashboard">Лог событий</Link>
-                        <Link to="/reports">Отчёты</Link>
-                        <Link to="/settings">Настройки</Link>
+                        <a href="/employees" className="active">Сотрудники</a>
+                        <a href="/devices">Устройства</a>
+                        <a href="/accessmatrix" > Матрица доступа</a>
+                        <a href="/dashboard">Лог событий</a>
+                        <a href="/reports">Отчёты</a>
+                        <a href="/setting">Настройки</a>
                     </nav>
                 </aside>
+   
 
                 <main className="Main">
                     <section className="Filters">
