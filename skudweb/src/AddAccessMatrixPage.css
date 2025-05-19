@@ -1,0 +1,124 @@
+﻿/* Шапка */
+.Header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #0057E7;
+    color: #fff;
+}
+
+.BackLink {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.25rem;
+}
+
+/* Форма */
+.Form {
+    max-width: 500px;
+    margin: 2rem auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.Field {
+    display: flex;
+    flex-direction: column;
+}
+
+    .Field label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .Field select {
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+/* Ошибка */
+.Error {
+    color: #e53935;
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+}
+
+/* Кнопка */
+.Btn.save {
+    padding: 0.75rem;
+    background: #4CAF50;
+    color: #fff;
+    border: none;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+    .Btn.save:hover {
+        background: #45A049;
+    }
+
+.Toggle {
+    position: relative;
+    width: 60px;
+    height: 28px;
+}
+
+    .Toggle input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+.Slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    border-radius: 34px;
+    transition: background-color 0.2s ease-in-out;
+}
+
+    .Slider::before {
+        position: absolute;
+        content: "";
+        height: 24px;
+        width: 24px;
+        left: 2px;
+        bottom: 2px;
+        background-color: white;
+        border-radius: 50%;
+        transition: transform 0.2s ease-in-out;
+        box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .Slider::after {
+        content: "❌";
+        position: absolute;
+        top: 50%;
+        left: 20px; /* Сдвигаем ❌ ближе к левому краю */
+        transform: translate(-50%, -50%);
+        font-size: 14px;
+        transition: all 0.2s ease-in-out;
+        pointer-events: none;
+    }
+
+/* Состояние "включено" (зеленый, ✅) */
+.Toggle input:checked + .Slider {
+    background-color: #4CAF50;
+}
+
+    .Toggle input:checked + .Slider::before {
+       transform: translateX(114px); /* Сдвигаем кружок вправо */
+    }
+
+    .Toggle input:checked + .Slider::after {
+        content: "✅";
+        left: calc(100% - 20px); /* Сдвигаем ✅ ближе к правому краю */
+    }

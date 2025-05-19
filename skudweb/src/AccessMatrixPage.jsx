@@ -1,19 +1,17 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import logo from './assets/natk-logo.png';
 import {
     fetchFloors,
     fetchDivisions,
     fetchRoomsAll,
-    fetchRoomsByFloor,
-    fetchAccessMatrix
+    fetchAccessMatrix,
+    toggleAccessMatrixEntry // теперь точно есть
 } from './accessMatrixApi';
 import './AccessMatrixPage.css';
 
 export default function AccessMatrixPage() {
-    const [collapsed, setCollapsed] = useState(
-        () => JSON.parse(localStorage.getItem('sidebar-collapsed') || 'false')
-    );
     const [floors, setFloors] = useState([]);
     const [divisions, setDivisions] = useState([]);
     const [rooms, setRooms] = useState([]);
@@ -25,56 +23,64 @@ export default function AccessMatrixPage() {
     useEffect(() => {
         fetchFloors().then(setFloors);
         fetchDivisions().then(setDivisions);
-        // сразу загрузим все комнаты, пока нет выбранного этажа
-        fetchRoomsAll().then(setRooms);
     }, []);
 
     useEffect(() => {
-        if (floorId == null) {
-            fetchRoomsAll().then(setRooms);
-        } else {
-            fetchRoomsByFloor(floorId).then(setRooms);
-        }
+        fetchRoomsAll().then(allRooms => {
+            setRooms(floorId ? allRooms.filter(r => r.floor?.id === floorId) : allRooms);
+        });
     }, [floorId]);
 
     useEffect(() => {
-        fetchAccessMatrix({ floorId, divisionId })
-            .then(setMatrix);
+        fetchAccessMatrix({ floorId, divisionId }).then(setMatrix);
     }, [floorId, divisionId]);
 
-    const toggleSidebar = () => {
-        const nc = !collapsed;
-        setCollapsed(nc);
-        localStorage.setItem('sidebar-collapsed', JSON.stringify(nc));
-    };
-
     const posts = Array.from(
-        new Map(matrix.map(m => [m.post.id, m.post])).values()
+        new Map(matrix.map(x => [x.post.id, x.post])).values()
     );
+
+    const toggleAccess = async (entry) => {
+        try {
+            await toggleAccessMatrixEntry(entry.id);
+
+            Swal.fire({
+                icon: 'success',
+                title: `Доступ изменён`,
+                toast: true,
+                position: 'top-end',
+                timer: 1200,
+                showConfirmButton: false
+            });
+
+            const updated = await fetchAccessMatrix({ floorId, divisionId });
+            setMatrix(updated);
+        } catch (err) {
+            console.error('Ошибка при обновлении доступа:', err);
+            Swal.fire({
+                icon: 'error',
+                title: 'Ошибка изменения доступа',
+                text: err.response?.data?.message || 'Не удалось изменить доступ'
+            });
+        }
+    };
 
     return (
         <div className="Dashboard">
             <header className="Header">
                 <img src={logo} alt="НАТК" className="Header-logo" />
-                <span className="Header-title">НАТК</span>
+                <span className="Header-title">Матрица доступа</span>
+
             </header>
 
             <div className="Body">
-                <aside className={`Sidebar ${collapsed ? 'collapsed' : ''}`}>
-                    <button
-                        className="Burger SidebarBurger"
-                        onClick={() => setCollapsed(c => !c)}
-                        aria-label="Toggle sidebar"
-                    >
-                        <span /><span /><span />
-                    </button>
+                <aside className="Sidebar">
                     <nav>
-                        <a href="/employees">Сотрудники</a>
-                        <a href="/devices">Устройства</a>
-                        <a href="/accessmatrix" className="active"> Матрица доступа</a>
-                        <a href="/dashboard">Лог событий</a>
-                        <a href="/reports">Отчёты</a>
-                        <a href="/setting">Настройки</a>
+                        <Link to="/employees">Сотрудники</Link>
+                        <Link to="/devices">Устройства</Link>
+                        <Link to="/accessmatrix" className="active">Матрица доступа</Link>
+                        <Link to="/dashboard">Лог событий</Link>
+                        <Link to="/reports">Отчёты</Link>
+                        <Link to="/settings">Настройки</Link>
                     </nav>
                 </aside>
 
@@ -83,26 +89,26 @@ export default function AccessMatrixPage() {
                         <label>
                             Этаж:
                             <select
-                                value={floorId || ''}
-                                onChange={e => setFloorId(e.target.value ? +e.target.value : null)}
+                                value={floorId ?? ''}
+                                onChange={e => setFloorId(e.target.value ? Number(e.target.value) : null)}
                             >
                                 <option value="">— все —</option>
-                                {floors.map(f =>
+                                {floors.map(f => (
                                     <option key={f.id} value={f.id}>{f.name}</option>
-                                )}
+                                ))}
                             </select>
                         </label>
 
                         <label>
                             Подразделение:
                             <select
-                                value={divisionId || ''}
-                                onChange={e => setDivisionId(e.target.value ? +e.target.value : null)}
+                                value={divisionId ?? ''}
+                                onChange={e => setDivisionId(e.target.value ? Number(e.target.value) : null)}
                             >
                                 <option value="">— все —</option>
-                                {divisions.map(d =>
+                                {divisions.map(d => (
                                     <option key={d.id} value={d.id}>{d.name}</option>
-                                )}
+                                ))}
                             </select>
                         </label>
                     </div>
@@ -122,16 +128,25 @@ export default function AccessMatrixPage() {
                                         <td>{post.division.name}</td>
                                         <td>{post.name}</td>
                                         {rooms.map(room => {
-                                            const rec = matrix.find(m =>
-                                                m.post.id === post.id && m.room.id === room.id
+                                            const entry = matrix.find(
+                                                m => m.post.id === post.id && m.room.id === room.id
                                             );
-                                            const ok = rec?.isAccess;
+
+                                            if (!entry) {
+                                                return (
+                                                    <td key={room.id} className="MatrixCell empty">—</td>
+                                                );
+                                            }
+
                                             return (
                                                 <td
                                                     key={room.id}
-                                                    className={ok ? 'MatrixCell ok' : 'MatrixCell no'}
+                                                    className={entry.isAccess ? 'MatrixCell ok' : 'MatrixCell no'}
+                                                    onClick={() => toggleAccess(entry)}
+                                                    style={{ cursor: 'pointer' }}
+                                                    title="Клик для изменения доступа"
                                                 >
-                                                    {ok ? '✔' : '✖'}
+                                                    {entry.isAccess ? '✔' : '✖'}
                                                 </td>
                                             );
                                         })}
@@ -142,9 +157,7 @@ export default function AccessMatrixPage() {
                     </div>
 
                     <div className="MatrixActions">
-                        <button className="Btn">Управление должностями</button>
-                        <button className="Btn">Управление помещениями</button>
-                        <button className="Btn">Сгенерировать QR</button>
+                        <Link to="/accessmatrix/new" className="Btn">Добавить запись</Link>
                     </div>
                 </main>
             </div>

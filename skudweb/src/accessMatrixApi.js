@@ -1,7 +1,7 @@
 import apiClient from './apiClient';
 
 /**
- * Возвращает все этажи: [{ id, name }, …]
+ * Возвращает все этажи
  */
 export async function fetchFloors() {
     const { data } = await apiClient.get('/api/Floor');
@@ -9,7 +9,7 @@ export async function fetchFloors() {
 }
 
 /**
- * Возвращает все подразделения: [{ id, name }, …]
+ * Возвращает все подразделения
  */
 export async function fetchDivisions() {
     const { data } = await apiClient.get('/api/Division');
@@ -17,7 +17,15 @@ export async function fetchDivisions() {
 }
 
 /**
- * Возвращает все комнаты (без фильтра)
+ * Возвращает все должности с подразделениями
+ */
+export async function fetchPostsAll() {
+    const { data } = await apiClient.get('/api/Post');
+    return data;
+}
+
+/**
+ * Возвращает все комнаты с этажами
  */
 export async function fetchRoomsAll() {
     const { data } = await apiClient.get('/api/Room');
@@ -25,17 +33,7 @@ export async function fetchRoomsAll() {
 }
 
 /**
- * Возвращает комнаты заданного этажа
- */
-export async function fetchRoomsByFloor(floorId) {
-    const { data } = await apiClient.get(`/api/Room?floorId=${floorId}`);
-    return data;
-}
-
-/**
- * Возвращает записи матрицы доступа, с возможной фильтрацией
- * по этажу и подразделению:
- *   [{ post: { id, name, division: { … } }, room: { id, name }, isAccess }, …]
+ * Возвращает матрицу доступа с фильтрацией
  */
 export async function fetchAccessMatrix({ floorId, divisionId }) {
     const q = new URLSearchParams();
@@ -43,4 +41,32 @@ export async function fetchAccessMatrix({ floorId, divisionId }) {
     if (divisionId != null) q.append('divisionId', divisionId);
     const { data } = await apiClient.get(`/api/AccessMatrix?${q}`);
     return data;
+}
+
+/**
+ * Создать новую запись доступа
+ */
+export async function createAccessMatrixEntry(entry) {
+    const { data } = await apiClient.post('/api/AccessMatrix', entry);
+    return data;
+}
+
+/**
+ * Обновить запись доступа по ID
+ */
+export async function updateAccessMatrixEntry(id, entry) {
+    const { data } = await apiClient.put(`/api/AccessMatrix/${id}`, {
+        id: id,
+        postId: entry.postId,
+        roomId: entry.roomId,
+        isAccess: entry.isAccess
+    });
+    return data;
+}
+
+/**
+ * Переключить доступ (toggle) по ID
+ */
+export async function toggleAccessMatrixEntry(id) {
+    await apiClient.put(`/api/AccessMatrix/${id}/toggle`);
 }

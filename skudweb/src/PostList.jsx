@@ -1,0 +1,91 @@
+﻿import React, { useEffect, useState } from 'react';
+import { NavLink, Link } from 'react-router-dom';
+import apiClient from './apiClient';
+import logo from './assets/natk-logo.png';
+import './ListPage.css';
+
+export default function PostList() {
+    const [posts, setPosts] = useState([]);
+    const [q, setQ] = useState('');
+    const [collapsed, setCollapsed] = useState(
+        () => JSON.parse(localStorage.getItem('sidebar-collapsed') || 'false')
+    );
+
+    useEffect(() => {
+        apiClient.get('/api/Post').then(r => setPosts(r.data));
+    }, []);
+
+    const filtered = posts.filter(p =>
+        p.name.toLowerCase().includes(q.toLowerCase()) ||
+        p.division?.name.toLowerCase().includes(q.toLowerCase())
+    );
+
+    const toggleSidebar = () => {
+        const nc = !collapsed;
+        setCollapsed(nc);
+        localStorage.setItem('sidebar-collapsed', JSON.stringify(nc));
+    };
+
+    return (
+        <div className="Dashboard">
+            <header className="Header">
+                <button className="Burger SidebarBurger" onClick={toggleSidebar} aria-label="Toggle sidebar">
+                    <span /><span /><span />
+                </button>
+                <img src={logo} alt="НАТК" className="Header-logo" />
+                <span className="Header-title">Должности</span>
+            </header>
+
+            <div className="Body">
+                <aside className={`Sidebar ${collapsed ? 'collapsed' : ''}`}>
+                    <nav>
+                        <NavLink to="/employees">Сотрудники</NavLink>
+                        <NavLink to="/devices">Устройства</NavLink>
+                        <NavLink to="/accessmatrix">Матрица доступа</NavLink>
+                        <NavLink to="/logs">Лог событий</NavLink>
+                        <NavLink to="/reports">Отчёты</NavLink>
+                        <NavLink to="/settings">Настройки</NavLink>
+                    </nav>
+                </aside>
+
+                <main className="Main ListPage">
+                    <div className="Search">
+                        <input
+                            type="text"
+                            placeholder="Поиск"
+                            value={q}
+                            onChange={e => setQ(e.target.value)}
+                        />
+                    </div>
+
+                    <div className="TableWrapper">
+                        <table className="ListTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Название должности</th>
+                                    <th>Подразделение</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filtered.map(p => (
+                                    <tr key={p.id}>
+                                        <td>{p.id}</td>
+                                        <td>{p.name}</td>
+                                        <td>{p.division?.name}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div className="Actions">
+                        <Link to="/posts/new" className="AddBtn">
+                            Добавление Должности
+                        </Link>
+                    </div>
+                </main>
+            </div>
+        </div>
+    );
+}
