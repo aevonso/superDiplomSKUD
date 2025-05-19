@@ -7,11 +7,12 @@ import {
     fetchDivisions,
     fetchRoomsAll,
     fetchAccessMatrix,
-    toggleAccessMatrixEntry // теперь точно есть
+    toggleAccessMatrixEntry
 } from './accessMatrixApi';
 import './AccessMatrixPage.css';
 
 export default function AccessMatrixPage() {
+    const [collapsed, setCollapsed] = useState(false);
     const [floors, setFloors] = useState([]);
     const [divisions, setDivisions] = useState([]);
     const [rooms, setRooms] = useState([]);
@@ -35,14 +36,11 @@ export default function AccessMatrixPage() {
         fetchAccessMatrix({ floorId, divisionId }).then(setMatrix);
     }, [floorId, divisionId]);
 
-    const posts = Array.from(
-        new Map(matrix.map(x => [x.post.id, x.post])).values()
-    );
+    const posts = Array.from(new Map(matrix.map(x => [x.post.id, x.post])).values());
 
     const toggleAccess = async (entry) => {
         try {
             await toggleAccessMatrixEntry(entry.id);
-
             Swal.fire({
                 icon: 'success',
                 title: `Доступ изменён`,
@@ -51,7 +49,6 @@ export default function AccessMatrixPage() {
                 timer: 1200,
                 showConfirmButton: false
             });
-
             const updated = await fetchAccessMatrix({ floorId, divisionId });
             setMatrix(updated);
         } catch (err) {
@@ -68,21 +65,28 @@ export default function AccessMatrixPage() {
         <div className="Dashboard">
             <header className="Header">
                 <img src={logo} alt="НАТК" className="Header-logo" />
-                <span className="Header-title">Матрица доступа</span>
-
+                <span className="Header-title">НАТК</span>
             </header>
 
             <div className="Body">
-                <aside className="Sidebar">
+                <aside className={`Sidebar ${collapsed ? 'collapsed' : ''}`}>
+                    <button
+                        className="Burger SidebarBurger"
+                        onClick={() => setCollapsed(c => !c)}
+                        aria-label="Toggle sidebar"
+                    >
+                        <span /><span /><span />
+                    </button>
                     <nav>
-                        <Link to="/employees">Сотрудники</Link>
-                        <Link to="/devices">Устройства</Link>
-                        <Link to="/accessmatrix" className="active">Матрица доступа</Link>
-                        <Link to="/dashboard">Лог событий</Link>
-                        <Link to="/reports">Отчёты</Link>
-                        <Link to="/settings">Настройки</Link>
+                        <a href="/employees">Сотрудники</a>
+                        <a href="/devices">Устройства</a>
+                        <a href="/accessmatrix" className="active" > Матрица доступа</a>
+                        <a href="/dashboard">Лог событий</a>
+                        <a href="/reports">Отчёты</a>
+                        <a href="/setting">Настройки</a>
                     </nav>
                 </aside>
+
 
                 <main className="Main">
                     <div className="MatrixFilters">
@@ -158,6 +162,13 @@ export default function AccessMatrixPage() {
 
                     <div className="MatrixActions">
                         <Link to="/accessmatrix/new" className="Btn">Добавить запись</Link>
+                    </div>
+
+                    <div className="MatrixButtons">
+                        <Link to="/posts" className="Btn blue">Управление должностями</Link>
+                        <Link to="/divisions" className="Btn blue">Управление подразделениями</Link>
+                        <Link to="/rooms" className="Btn blue">Управление помещениями</Link>
+                        <Link to="/accessmatrix/manage" className="Btn blue">Управление матрицей</Link>
                     </div>
                 </main>
             </div>

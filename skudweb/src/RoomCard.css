@@ -1,0 +1,115 @@
+.RoomCardPage {
+    font-family: sans-serif;
+    background: #f8f9fa;
+    min-height: 100vh;
+}
+
+.Header {
+    display: flex;
+    align-items: center;
+    background: #2b7cd3;
+    padding: 1rem;
+}
+
+.BackLink {
+    font-size: 1.5rem;
+    color: white;
+    margin-right: 1rem;
+    text-decoration: none;
+}
+
+.Header-logo {
+    height: 40px;
+}
+
+.RoomCardMain {
+    max-width: 600px;
+    margin: 2rem auto;
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.Field {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+    .Field label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: .5rem;
+    }
+
+    .Field input,
+    .Field select {
+        width: 100%;
+        padding: .5rem;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        background: #eee;
+    }
+
+.Buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.Btn {
+    padding: .6rem 1rem;
+    border: none;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    color: white;
+}
+
+    .Btn.red {
+        background: #e53935;
+    }
+
+    .Btn.orange {
+        background: #ff9800;
+    }
+
+    .Btn.green {
+        background: #4caf50;
+    }
+
+    .Btn.blue {
+        background: #2196f3;
+    }
+
+.QRBox {
+    margin: 1.5rem 0;
+    min-height: 220px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #ddd;
+    padding: 1rem;
+}
+
+.Spinner {
+    border: 8px solid #eee;
+    border-top: 8px solid #4caf50;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
