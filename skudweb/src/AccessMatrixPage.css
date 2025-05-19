@@ -86,3 +86,101 @@
         .MatrixActions .Btn:hover {
             background: #0041b3;
         }
+.MatrixButtons {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+.Btn.blue {
+    background-color: #0057E7;
+    color: white;
+    padding: 0.6rem 1.5rem;
+    border: none;
+    border-radius: 24px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 500;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+    .Btn.blue:hover {
+        background-color: #0040ba;
+    }
+
+/* Sidebar */
+.Sidebar {
+    width: 220px;
+    background-color: #f0f0f0;
+    padding: 1rem;
+    transition: width 0.3s ease;
+    min-height: 100vh;
+    position: relative;
+}
+
+    .Sidebar.collapsed {
+        width: 60px;
+    }
+
+    .Sidebar nav {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .Sidebar a {
+        color: #111;
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.4rem 0.75rem;
+        border-radius: 4px;
+        transition: background 0.2s;
+    }
+
+        .Sidebar a.active {
+            background-color: #0057E7;
+            color: white;
+        }
+
+        .Sidebar a:hover {
+            background-color: rgba(0, 87, 231, 0.1);
+        }
+
+/* Burger button */
+.SidebarBurger {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    z-index: 10;
+}
+
+    .SidebarBurger span {
+        width: 24px;
+        height: 3px;
+        background-color: #333;
+        border-radius: 2px;
+        transition: all 0.3s ease;
+    }
+
+/* ѕри свернутом сайдбаре скрываем текст, оставл€€ иконку */
+.Sidebar.collapsed nav a {
+    font-size: 0;
+    padding: 0.4rem;
+    text-align: center;
+}
+
+    .Sidebar.collapsed nav a::before {
+        content: 'Х';
+        font-size: 1.2rem;
+        display: inline-block;
+    }

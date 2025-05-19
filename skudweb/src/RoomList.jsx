@@ -1,5 +1,5 @@
 ﻿import React, { useEffect, useState } from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
 import apiClient from './apiClient';
 import logo from './assets/natk-logo.png';
 import './ListPage.css';
@@ -10,6 +10,7 @@ export default function RoomList() {
     const [collapsed, setCollapsed] = useState(
         () => JSON.parse(localStorage.getItem('sidebar-collapsed') || 'false')
     );
+    const navigate = useNavigate();
 
     useEffect(() => {
         apiClient.get('/api/Room').then(r => setRooms(r.data));
@@ -24,6 +25,10 @@ export default function RoomList() {
         const nc = !collapsed;
         setCollapsed(nc);
         localStorage.setItem('sidebar-collapsed', JSON.stringify(nc));
+    };
+
+    const handleRowClick = (id) => {
+        navigate(`/rooms/${id}`);
     };
 
     return (
@@ -69,7 +74,11 @@ export default function RoomList() {
                             </thead>
                             <tbody>
                                 {filtered.map(rm => (
-                                    <tr key={rm.id}>
+                                    <tr
+                                        key={rm.id}
+                                        onClick={() => handleRowClick(rm.id)}
+                                        style={{ cursor: 'pointer' }}
+                                    >
                                         <td>{rm.id}</td>
                                         <td>{rm.name}</td>
                                         <td>{rm.floor?.name}</td>
