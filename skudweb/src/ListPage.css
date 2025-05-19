@@ -1,0 +1,140 @@
+﻿/* Сброс */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body, #root {
+    font-family: Arial, sans-serif;
+    height: 100%;
+}
+
+/* Dashboard layout */
+.Header {
+    display: flex;
+    align-items: center;
+    height: 56px;
+    padding: 0 1rem;
+    background: #0057E7;
+    color: #fff;
+}
+
+.Burger {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-right: 1rem;
+}
+
+    .Burger span {
+        display: block;
+        width: 20px;
+        height: 2px;
+        background: #fff;
+    }
+
+.Header-logo {
+    height: 2rem;
+    margin-right: .5rem;
+}
+
+.Header-title {
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+.Body {
+    display: flex;
+    height: calc(100vh - 56px);
+}
+
+.Sidebar {
+    width: 200px;
+    background: #f0f0f0;
+    padding-top: 1rem;
+}
+
+    .Sidebar nav {
+        display: flex;
+        flex-direction: column;
+        gap: .5rem;
+        padding: 0 1rem;
+    }
+
+    .Sidebar a {
+        text-decoration: none;
+        color: #333;
+        padding: .5rem;
+        border-radius: 4px;
+    }
+
+        .Sidebar a.active,
+        .Sidebar a:hover {
+            background: #ddd;
+        }
+
+.Main {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+    background: #fff;
+}
+
+/* Поиск */
+.ListPage .Search {
+    margin-bottom: 1rem;
+}
+
+    .ListPage .Search input {
+        width: 250px;
+        padding: .5rem .75rem;
+        border: 1px solid #ccc;
+        border-radius: 20px;
+        background: #f5f5f5;
+    }
+
+/* Таблица */
+.TableWrapper {
+    overflow-x: auto;
+}
+
+.ListTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .ListTable th,
+    .ListTable td {
+        border: 1px solid #ddd;
+        padding: .75rem;
+        text-align: left;
+    }
+
+    .ListTable th {
+        background: #fafafa;
+    }
+
+/* Кнопка добавления */
+.Actions {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.AddBtn {
+    display: inline-block;
+    padding: .6rem 1.2rem;
+    background: #4CAF50;
+    color: #fff;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background .2s;
+}
+
+    .AddBtn:hover {
+        background: #45A049;
+    }

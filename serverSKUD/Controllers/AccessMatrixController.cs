@@ -2,6 +2,7 @@
 using Data.Tables;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using serverSKUD.Model.serverSKUD.Model;
 
 namespace serverSKUD.Controllers
 {
@@ -44,11 +45,36 @@ namespace serverSKUD.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<AccessMatrix>> Create([FromBody] AccessMatrix dto)
+        public async Task<ActionResult<AccessMatrix>> Create([FromBody] AccessMatrixCreateDto dto)
         {
-            _db.AccessMatrices.Add(dto);
+            var post = await _db.Posts.FindAsync(dto.PostId);
+            if (post == null) return BadRequest(new { message = "PostId не найден" });
+
+            var room = await _db.Rooms.FindAsync(dto.RoomId);
+            if (room == null) return BadRequest(new { message = "RoomId не найден" });
+
+            // Удаляем существующую запись для этой пары Post+Room (обеспечиваем уникальность)
+            var existing = await _db.AccessMatrices
+                .FirstOrDefaultAsync(x => x.PostId == dto.PostId && x.RoomId == dto.RoomId);
+            if (existing != null)
+            {
+                _db.AccessMatrices.Remove(existing);
+            }
+
+            var entry = new AccessMatrix
+            {
+                PostId = dto.PostId,
+                RoomId = dto.RoomId,
+                IsAccess = dto.IsAccess
+            };
+
+            _db.AccessMatrices.Add(entry);
             await _db.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetById), new { id = dto.Id }, dto);
+
+            await _db.Entry(entry).Reference(x => x.Post).LoadAsync();
+            await _db.Entry(entry).Reference(x => x.Room).LoadAsync();
+
+            return CreatedAtAction(nameof(GetById), new { id = entry.Id }, entry);
         }
 
         [HttpPut("{id:int}")]
@@ -62,7 +88,17 @@ namespace serverSKUD.Controllers
             await _db.SaveChangesAsync();
             return NoContent();
         }
+        [HttpPut("{id:int}/toggle")]
+        public async Task<IActionResult> ToggleAccess(int id)
+        {
+            var entry = await _db.AccessMatrices.FindAsync(id);
+            if (entry == null) return NotFound();
 
+            entry.IsAccess = !entry.IsAccess;
+            await _db.SaveChangesAsync();
+
+            return NoContent();
+        }
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
