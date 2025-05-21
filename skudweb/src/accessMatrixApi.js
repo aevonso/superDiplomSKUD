@@ -1,7 +1,7 @@
-import apiClient from './apiClient';
+п»їimport apiClient from './apiClient';
 
 /**
- * Возвращает все этажи
+ * Р’РѕР·РІСЂР°С‰Р°РµС‚ РІСЃРµ СЌС‚Р°Р¶Рё
  */
 export async function fetchFloors() {
     const { data } = await apiClient.get('/api/Floor');
@@ -9,7 +9,7 @@ export async function fetchFloors() {
 }
 
 /**
- * Возвращает все подразделения
+ * Р’РѕР·РІСЂР°С‰Р°РµС‚ РІСЃРµ РїРѕРґСЂР°Р·РґРµР»РµРЅРёСЏ
  */
 export async function fetchDivisions() {
     const { data } = await apiClient.get('/api/Division');
@@ -17,7 +17,7 @@ export async function fetchDivisions() {
 }
 
 /**
- * Возвращает все должности с подразделениями
+ * Р’РѕР·РІСЂР°С‰Р°РµС‚ РІСЃРµ РґРѕР»Р¶РЅРѕСЃС‚Рё СЃ РїРѕРґСЂР°Р·РґРµР»РµРЅРёСЏРјРё
  */
 export async function fetchPostsAll() {
     const { data } = await apiClient.get('/api/Post');
@@ -25,7 +25,7 @@ export async function fetchPostsAll() {
 }
 
 /**
- * Возвращает все комнаты с этажами
+ * Р’РѕР·РІСЂР°С‰Р°РµС‚ РІСЃРµ РєРѕРјРЅР°С‚С‹ СЃ СЌС‚Р°Р¶Р°РјРё
  */
 export async function fetchRoomsAll() {
     const { data } = await apiClient.get('/api/Room');
@@ -33,7 +33,7 @@ export async function fetchRoomsAll() {
 }
 
 /**
- * Возвращает матрицу доступа с фильтрацией
+ * Р’РѕР·РІСЂР°С‰Р°РµС‚ РјР°С‚СЂРёС†Сѓ РґРѕСЃС‚СѓРїР° СЃ С„РёР»СЊС‚СЂР°С†РёРµР№
  */
 export async function fetchAccessMatrix({ floorId, divisionId }) {
     const q = new URLSearchParams();
@@ -44,7 +44,7 @@ export async function fetchAccessMatrix({ floorId, divisionId }) {
 }
 
 /**
- * Создать новую запись доступа
+ * РЎРѕР·РґР°С‚СЊ РЅРѕРІСѓСЋ Р·Р°РїРёСЃСЊ РґРѕСЃС‚СѓРїР°
  */
 export async function createAccessMatrixEntry(entry) {
     const { data } = await apiClient.post('/api/AccessMatrix', entry);
@@ -52,7 +52,7 @@ export async function createAccessMatrixEntry(entry) {
 }
 
 /**
- * Обновить запись доступа по ID
+ * РћР±РЅРѕРІРёС‚СЊ Р·Р°РїРёСЃСЊ РґРѕСЃС‚СѓРїР° РїРѕ ID
  */
 export async function updateAccessMatrixEntry(id, entry) {
     const { data } = await apiClient.put(`/api/AccessMatrix/${id}`, {
@@ -65,8 +65,42 @@ export async function updateAccessMatrixEntry(id, entry) {
 }
 
 /**
- * Переключить доступ (toggle) по ID
+ * РџРµСЂРµРєР»СЋС‡РёС‚СЊ РґРѕСЃС‚СѓРї (toggle) РїРѕ ID
  */
 export async function toggleAccessMatrixEntry(id) {
     await apiClient.put(`/api/AccessMatrix/${id}/toggle`);
+}
+
+
+export async function checkQrAccess(payload) {
+    const { data } = await apiClient.post('/api/QrAccess/check', payload);
+    return data;
+}
+
+export async function fetchPostsWithAccess(roomId) {
+    const { data } = await apiClient.get(`/api/Post/withAccess?roomId=${roomId}`);
+    return data;
+}
+
+export async function fetchRoomById(id) {
+    const { data } = await apiClient.get(`/api/Room/${id}`);
+    return data;
+}
+
+/**
+ * РћР±РЅРѕРІРёС‚СЊ РїРѕРјРµС‰РµРЅРёРµ
+ */
+export async function updateRoom(id, form) {
+    return apiClient.put(`/api/Room/${id}`, {
+        name: form.name,
+        floorId: form.floorId
+    });
+}
+
+
+/**
+ * РЈРґР°Р»РёС‚СЊ РїРѕРјРµС‰РµРЅРёРµ
+ */
+export async function deleteRoom(id) {
+    return apiClient.delete(`/api/Room/${id}`);
 }

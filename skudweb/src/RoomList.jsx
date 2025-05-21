@@ -34,22 +34,27 @@ export default function RoomList() {
     return (
         <div className="Dashboard">
             <header className="Header">
-                <button className="Burger SidebarBurger" onClick={toggleSidebar} aria-label="Toggle sidebar">
-                    <span /><span /><span />
-                </button>
+            
                 <img src={logo} alt="НАТК" className="Header-logo" />
                 <span className="Header-title">Помещения</span>
             </header>
 
             <div className="Body">
                 <aside className={`Sidebar ${collapsed ? 'collapsed' : ''}`}>
+                    <button
+                        className="Burger SidebarBurger"
+                        onClick={() => setCollapsed(c => !c)}
+                        aria-label="Toggle sidebar"
+                    >
+                        <span /><span /><span />
+                    </button>
                     <nav>
-                        <NavLink to="/employees">Сотрудники</NavLink>
-                        <NavLink to="/devices">Устройства</NavLink>
-                        <NavLink to="/accessmatrix">Матрица доступа</NavLink>
-                        <NavLink to="/logs">Лог событий</NavLink>
-                        <NavLink to="/reports">Отчёты</NavLink>
-                        <NavLink to="/settings">Настройки</NavLink>
+                        <a href="/employees">Сотрудники</a>
+                        <a href="/devices">Устройства</a>
+                        <a href="/accessmatrix" className="active" > Матрица доступа</a>
+                        <a href="/dashboard">Лог событий</a>
+                        <a href="/reports">Отчёты</a>
+                        <a href="/setting">Настройки</a>
                     </nav>
                 </aside>
 
