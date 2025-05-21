@@ -1,15 +1,15 @@
 import apiClient from './apiClient';
 
 /**
- * Получить устройства с фильтрацией
- * @param {{
- *   date?: string,
- *   employeeName?: string,
- *   deviceName?: string
- * }} filters
+ * Получить список устройств с фильтрацией
+ * @param {Object} filters
+ * @param {string} [filters.date]
+ * @param {string} [filters.employeeName]
+ * @param {string} [filters.deviceName]
  * @returns {Promise<Array<{
  *   id: number,
  *   deviceName: string,
+ *   deviceCode: string,
  *   createdAt: string,
  *   isActive: boolean,
  *   employeeName: string
@@ -26,8 +26,25 @@ export async function fetchMobileDevices(filters = {}) {
 }
 
 /**
+ * Получить устройство по ID
+ * @param {number|string} id
+ * @returns {Promise<{
+ *   id: number,
+ *   deviceName: string,
+ *   deviceCode: string,
+ *   createdAt: string,
+ *   isActive: boolean,
+ *   employeeName: string
+ * }>}
+ */
+export async function fetchMobileDeviceById(id) {
+    const { data } = await apiClient.get(`/api/MobileDevices/${id}`);
+    return data;
+}
+
+/**
  * Добавить новое устройство
- * @param {{ employerId: number, deviceName: string }} payload
+ * @param {{ employerId: number, deviceName: string, deviceCode: string }} payload
  * @returns {Promise<number>} — ID нового устройства
  */
 export async function addMobileDevice(payload) {
@@ -36,20 +53,20 @@ export async function addMobileDevice(payload) {
 }
 
 /**
- * Удалить устройство по ID
- * @param {number} id
- * @returns {Promise<void>}
- */
-export async function deleteMobileDevice(id) {
-    await apiClient.delete(`/api/MobileDevices/${id}`);
-}
-
-/**
- * Обновить устройство
- * @param {number} id
- * @param {{ employerId: number, deviceName: string, isActive: boolean }} payload
+ * Обновить устройство по ID
+ * @param {number|string} id
+ * @param {{ deviceName: string, deviceCode: string }} payload
  * @returns {Promise<void>}
  */
 export async function updateMobileDevice(id, payload) {
     await apiClient.put(`/api/MobileDevices/${id}`, payload);
+}
+
+/**
+ * Удалить устройство по ID
+ * @param {number|string} id
+ * @returns {Promise<void>}
+ */
+export async function deleteMobileDevice(id) {
+    await apiClient.delete(`/api/MobileDevices/${id}`);
 }

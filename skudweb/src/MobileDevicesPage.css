@@ -57,3 +57,29 @@
         color: red;
         font-weight: bold;
     }
+
+.AddDeviceButton {
+    margin-top: 1.5rem;
+    padding: 0.7rem 1.5rem;
+    background-color: #0057E7;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+    .AddDeviceButton:hover {
+        background-color: #0041b3;
+    }
+.DeviceRow {
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+    .DeviceRow:hover {
+        background-color: #eef;
+    }

@@ -1,11 +1,13 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { fetchMobileDevices } from './mobileDeviceApi';
 import logo from './assets/natk-logo.png';
+import { useNavigate } from 'react-router-dom';
 import './MobileDevicesPage.css';
 
 export default function MobileDevicesPage() {
     const [devices, setDevices] = useState([]);
     const [filters, setFilters] = useState({ date: '', employeeName: '', deviceName: '' });
+    const navigate = useNavigate();
 
     const applyFilters = async () => {
         const data = await fetchMobileDevices(filters);
@@ -26,7 +28,7 @@ export default function MobileDevicesPage() {
         <div className="Dashboard">
             <header className="Header">
                 <img src={logo} alt="НАТК" className="Header-logo" />
-                <span className="Header-title">Устройства</span>
+                <span className="Header-title">НАТК</span>
             </header>
 
             <div className="Body">
@@ -74,7 +76,11 @@ export default function MobileDevicesPage() {
                         </thead>
                         <tbody>
                             {devices.map(dev => (
-                                <tr key={dev.id}>
+                                <tr
+                                    key={dev.id}
+                                    className="DeviceRow"
+                                    onClick={() => navigate(`/devices/${dev.id}`)}
+                                >
                                     <td>{dev.employeeName}</td>
                                     <td>{dev.deviceName}</td>
                                     <td>{new Date(dev.createdAt).toLocaleString()}</td>
@@ -85,6 +91,10 @@ export default function MobileDevicesPage() {
                             ))}
                         </tbody>
                     </table>
+
+                    <button className="AddDeviceButton" onClick={() => navigate('/devices/register')}>
+                        Добавить устройство
+                    </button>
                 </main>
             </div>
         </div>

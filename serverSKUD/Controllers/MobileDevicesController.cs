@@ -74,6 +74,7 @@ public class MobileDevicesController : ControllerBase
         {
             EmployerId = dto.EmployerId,
             DeviceName = dto.DeviceName,
+            DeviceCode = dto.DeviceCode,
             IsActive = true,
             CreatedAt = DateTime.UtcNow
         };
@@ -93,6 +94,7 @@ public class MobileDevicesController : ControllerBase
 
         d.DeviceName = dto.DeviceName;
         d.IsActive = dto.IsActive;
+        d.DeviceCode = dto.DeviceCode;
         await _db.SaveChangesAsync();
 
         return NoContent();

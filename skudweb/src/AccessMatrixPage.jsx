@@ -168,7 +168,6 @@ export default function AccessMatrixPage() {
                         <Link to="/posts" className="Btn blue">Управление должностями</Link>
                         <Link to="/divisions" className="Btn blue">Управление подразделениями</Link>
                         <Link to="/rooms" className="Btn blue">Управление помещениями</Link>
-                        <Link to="/accessmatrix/manage" className="Btn blue">Управление матрицей</Link>
                     </div>
                 </main>
             </div>
