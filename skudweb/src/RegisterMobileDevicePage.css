@@ -1,0 +1,123 @@
+﻿/* Общий сброс */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body, #root {
+    font-family: Arial, sans-serif;
+    height: 100%;
+    background: #fff;
+}
+
+/* Хедер */
+.Header {
+    display: flex;
+    align-items: center;
+    height: 56px;
+    padding: 0 1rem;
+    background: #0057E7;
+    color: #fff;
+}
+
+.BackLink {
+    color: #fff;
+    text-decoration: none;
+    margin-right: 1rem;
+}
+
+.Header-logo {
+    height: 2rem;
+    margin-right: 0.5rem;
+}
+
+.Header-title {
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+/* Основной контейнер */
+.FormMain {
+    background: #fff;
+    padding: 2rem;
+}
+
+.FormBlock {
+    display: flex;
+    flex-direction: row; /* <-- критично: горизонтальное расположение */
+    justify-content: center;
+    align-items: flex-start;
+    gap: 4rem;
+    max-width: 1000px;
+    margin: 2rem auto;
+}
+
+/* Фото */
+.PhotoBlock {
+    width: 400px;
+    height: 400px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.Photo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Поля формы */
+.FieldsBlock {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.2rem;
+}
+
+.Field {
+    display: flex;
+    flex-direction: column;
+    font-weight: bold;
+}
+
+    .Field label {
+        margin-bottom: 0.3rem;
+    }
+
+    .Field input,
+    .Field select {
+        padding: 0.6rem 1rem;
+        border-radius: 20px;
+        border: none;
+        background: #ddd;
+        font-size: 1rem;
+        width: 100%;
+    }
+
+.ActionButtons {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 1rem;
+}
+
+.Btn {
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+    .Btn.save {
+        background: green;
+        color: white;
+    }
+
+        .Btn.save:hover {
+            background: #007000;
+        }

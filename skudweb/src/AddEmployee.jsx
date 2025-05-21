@@ -44,8 +44,6 @@ export default function AddEmployee() {
 
     const handleSubmit = async e => {
         e.preventDefault();
-
-        // Клиентская проверка
         if (!form.login || !form.password) {
             await Swal.fire({
                 icon: 'error',
@@ -95,8 +93,7 @@ export default function AddEmployee() {
             </header>
 
             <main className="FormMain">
-                <form onSubmit={handleSubmit} className="FormBlock">
-                    {/* Фото */}
+                <form onSubmit={handleSubmit} className="FormBlock" autoComplete="off">
                     <div className="AvatarSection">
                         <div className="PhotoBlock">
                             {previewUrl
@@ -125,95 +122,101 @@ export default function AddEmployee() {
                         </div>
                     </div>
 
-                    {/* Поля */}
-                    {[['lastName', 'Фамилия'], ['firstName', 'Имя'], ['patronymic', 'Отчество'], ['email', 'Email']].map(([f, label]) => (
-                        <div className="Field" key={f}>
-                            <label>{label}:</label>
+                    <div className="FieldsBlock">
+                        {[['lastName', 'Фамилия'], ['firstName', 'Имя'], ['patronymic', 'Отчество'], ['email', 'Email']].map(([f, label]) => (
+                            <div className="Field" key={f}>
+                                <label htmlFor={f}>{label}:</label>
+                                <input
+                                    id={f}
+                                    type={f === 'email' ? 'email' : 'text'}
+                                    autoComplete="off"
+                                    required
+                                    value={form[f]}
+                                    onChange={e => onChange(f, e.target.value)}
+                                />
+                            </div>
+                        ))}
+
+                        <div className="Field">
+                            <label htmlFor="login">Логин:</label>
                             <input
-                                type={f === 'email' ? 'email' : 'text'}
+                                id="login"
                                 required
-                                value={form[f]}
-                                onChange={e => onChange(f, e.target.value)}
+                                autoComplete="off"
+                                value={form.login}
+                                onChange={e => onChange('login', e.target.value)}
                             />
                         </div>
-                    ))}
-
-                    <div className="Field">
-                        <label>Логин:</label>
-                        <input
-                            required
-                            value={form.login}
-                            onChange={e => onChange('login', e.target.value)}
-                        />
-                    </div>
-                    <div className="Field">
-                        <label>Пароль:</label>
-                        <input
-                            type="password"
-                            minLength={6}
-                            required
-                            value={form.password}
-                            onChange={e => onChange('password', e.target.value)}
-                        />
-                    </div>
-                    <div className="Field">
-                        <label>Телефон:</label>
-                        <input
-                            type="tel"
-                            required
-                            maxLength={12}
-                            value={form.phoneNumber}
-                            onChange={onPhoneChange}
-                        />
-                    </div>
-
-                    <div className="Field">
-                        <label>Подразделение:</label>
-                        <select
-                            required
-                            value={form.divisionId}
-                            onChange={e => onChange('divisionId', e.target.value)}
-                        >
-                            <option value="">— выберите —</option>
-                            {divisions.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-                        </select>
-                    </div>
-
-                    <div className="Field">
-                        <label>Должность:</label>
-                        <select
-                            required
-                            value={form.postId}
-                            onChange={e => onChange('postId', e.target.value)}
-                        >
-                            <option value="">— выберите —</option>
-                            {posts.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-                        </select>
-                    </div>
-
-                    <div className="PassportSection">
-                        <div className="PassportField">
-                            <label>Серия паспорта:</label>
+                        <div className="Field">
+                            <label htmlFor="password">Пароль:</label>
                             <input
+                                id="password"
+                                type="password"
+                                minLength={6}
+                                autoComplete="new-password"
                                 required
-                                maxLength={4}
-                                value={form.passportSeria}
-                                onChange={e => onChange('passportSeria', e.target.value.replace(/\D/g, '').slice(0, 4))}
+                                value={form.password}
+                                onChange={e => onChange('password', e.target.value)}
                             />
                         </div>
-                        <div className="PassportField">
-                            <label>Номер паспорта:</label>
+                        <div className="Field">
+                            <label htmlFor="phoneNumber">Телефон:</label>
                             <input
+                                id="phoneNumber"
+                                type="tel"
                                 required
-                                maxLength={6}
-                                value={form.passportNumber}
-                                onChange={e => onChange('passportNumber', e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                maxLength={12}
+                                value={form.phoneNumber}
+                                onChange={onPhoneChange}
                             />
                         </div>
-                    </div>
+                        <div className="Field">
+                            <label>Подразделение:</label>
+                            <select
+                                required
+                                value={form.divisionId}
+                                onChange={e => onChange('divisionId', e.target.value)}
+                            >
+                                <option value="">— выберите —</option>
+                                {divisions.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+                            </select>
+                        </div>
+                        <div className="Field">
+                            <label>Должность:</label>
+                            <select
+                                required
+                                value={form.postId}
+                                onChange={e => onChange('postId', e.target.value)}
+                            >
+                                <option value="">— выберите —</option>
+                                {posts.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                            </select>
+                        </div>
 
-                    <div className="ActionButtons">
-                        <button type="submit" className="Btn save">Создать</button>
+                        <div className="PassportSection">
+                            <div className="PassportField">
+                                <label>Серия паспорта:</label>
+                                <input
+                                    required
+                                    maxLength={4}
+                                    value={form.passportSeria}
+                                    onChange={e => onChange('passportSeria', e.target.value.replace(/\D/g, '').slice(0, 4))}
+                                />
+                            </div>
+                            <div className="PassportField">
+                                <label>Номер паспорта:</label>
+                                <input
+                                    required
+                                    maxLength={6}
+                                    value={form.passportNumber}
+                                    onChange={e => onChange('passportNumber', e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="ActionButtons">
+                            <button type="submit" className="Btn save">Создать</button>
+                        </div>
                     </div>
                 </form>
             </main>

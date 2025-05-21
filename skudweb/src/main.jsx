@@ -16,6 +16,8 @@ import RoomList from './RoomList';
 import RoomCard from './RoomCard'; // ← Добавь импорт
 import AddAccessMatrixPage from './AddAccessMatrixPage';
 import MobileDevicesPage from './MobileDevicesPage';
+import MobileDeviceCard from './MobileDeviceCard';
+import RegisterMobileDevicePage from './RegisterMobileDevicePage';
 import './App.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -32,10 +34,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route path="/divisions" element={<DivisionList />} />
             <Route path="/posts" element={<PostList />} />
             <Route path="/rooms" element={<RoomList />} />
-
+            <Route path="/devices/register" element={<RegisterMobileDevicePage />} />
             <Route path="/devices" element={<MobileDevicesPage />} />
             <Route path="/rooms/:id" element={<RoomCard />} /> {/* ← Вот это добавь */}
             <Route path="/accessmatrix/new" element={<AddAccessMatrixPage />} />
+            <Route path="/devices/:id" element={<MobileDeviceCard />} />
             <Route path="*" element={<NotFound />} />
         </Routes>
     </BrowserRouter>
