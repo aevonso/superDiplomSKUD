@@ -41,10 +41,11 @@ namespace serverSKUD.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Room dto)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateRoomDto dto)
         {
             var r = await _db.Rooms.FindAsync(id);
             if (r == null) return NotFound();
+
             r.Name = dto.Name;
             r.FloorId = dto.FloorId;
             await _db.SaveChangesAsync();
@@ -60,5 +61,12 @@ namespace serverSKUD.Controllers
             await _db.SaveChangesAsync();
             return NoContent();
         }
+    }
+
+
+    public class UpdateRoomDto
+    {
+        public string Name { get; set; } = string.Empty;
+        public int FloorId { get; set; }
     }
 }

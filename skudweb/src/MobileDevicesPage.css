@@ -1,0 +1,59 @@
+.Main {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.Filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+    .Filters input {
+        padding: 0.4rem 0.6rem;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+    }
+
+    .Filters button {
+        padding: 0.4rem 0.8rem;
+        background: #0057E7;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+        .Filters button:hover {
+            background: #0041b3;
+        }
+
+.DevicesTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+    .DevicesTable th,
+    .DevicesTable td {
+        padding: 0.6rem;
+        border: 1px solid #ddd;
+        text-align: left;
+    }
+
+    .DevicesTable th {
+        background: #f5f5f5;
+    }
+
+    .DevicesTable .green {
+        color: green;
+        font-weight: bold;
+    }
+
+    .DevicesTable .red {
+        color: red;
+        font-weight: bold;
+    }
