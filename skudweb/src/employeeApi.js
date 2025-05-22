@@ -47,3 +47,7 @@ export async function deleteAvatar(id) {
 export function getAvatarUrl(id) {
     return `${apiClient.defaults.baseURL}/api/Employee/${id}/avatar`;
 }
+export async function checkUnique(data) {
+    const resp = await apiClient.post('/api/Employee/check-unique', data);
+    return resp.data;
+}

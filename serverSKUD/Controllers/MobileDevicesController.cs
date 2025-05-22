@@ -112,4 +112,5 @@ public class MobileDevicesController : ControllerBase
 
         return NoContent();
     }
+    //:)
 }

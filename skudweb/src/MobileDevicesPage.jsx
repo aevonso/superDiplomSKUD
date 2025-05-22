@@ -36,7 +36,7 @@ export default function MobileDevicesPage() {
                     <nav>
                         <a href="/employees">Сотрудники</a>
                         <a href="/devices" className="active">Устройства</a>
-                        <a href="/passes">Пропуски</a>
+                        <a href="/accessmatrix">Матрица доступа</a>
                         <a href="/logs">Лог событий</a>
                         <a href="/reports">Отчёты</a>
                         <a href="/settings">Настройки</a>
