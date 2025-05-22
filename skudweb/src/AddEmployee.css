@@ -1,13 +1,13 @@
-﻿/* îáùèé ñáðîñ */
-* {
+﻿* {
     box-sizing: border-box;
     margin: 0;
-    padding: 0
+    padding: 0;
 }
 
-body, #root {
-    font-family: Arial,sans-serif;
-    height: 100%
+body,
+#root {
+    font-family: Arial, sans-serif;
+    height: 100%;
 }
 
 /* Header */
@@ -16,54 +16,68 @@ body, #root {
     align-items: center;
     height: 56px;
     padding: 0 1rem;
-    background: #0057E7;
+    background: #0057e7;
     color: #fff;
 }
 
 .BackLink {
     color: #fff;
     text-decoration: none;
-    margin-right: 1rem
+    margin-right: 1rem;
 }
 
 .Header-logo {
     height: 2rem;
-    margin-right: .5rem
+    margin-right: 0.5rem;
 }
 
 .Header-title {
     font-size: 1.25rem;
-    font-weight: 500
+    font-weight: 500;
 }
 
-/* Ôëåêñ-êîíòåéíåð ñòðàíèöû */
-.AddEmployee, .EmployeeCard {
+/* контейнер и фон */
+.AddEmployee {
     display: flex;
     flex-direction: column;
     height: 100vh;
 }
 
-.FormMain, .Body {
+.FormMain {
     flex: 1;
-    overflow: auto;
-    background: #FAFCFF;
+    overflow-y: auto;
+    background: #fafcff;
+    padding: 1rem;
 }
 
-/* Ñåêöèÿ ôîòî */
-.AvatarSection, .PhotoBlock {
+/* Основная форма: 2 колонки */
+.FormBlock {
+    max-width: 980px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    column-gap: 2rem;
+}
+
+/* Левая часть: фото и кнопки */
+.AvatarSection {
     display: flex;
     flex-direction: column;
+    gap: 0.5rem;
     align-items: center;
 }
 
+/* фото */
 .PhotoBlock {
-    width: 240px;
-    height: 240px;
+    width: 360px;
+    height: 360px;
     border: 2px solid #ddd;
     border-radius: 8px;
-    overflow: hidden;
     background: #f5f5f5;
-    margin-bottom: 1rem;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
     .PhotoBlock .Photo {
@@ -73,127 +87,123 @@ body, #root {
     }
 
 .PhotoPlaceholder {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     color: #888;
     font-size: 1rem;
 }
 
-.AvatarButtons button {
-    width: 100%;
-    margin-bottom: .5rem;
-}
-
-/* Îñíîâíàÿ ôîðìà */
-.FormBlock, .CardContent {
-    max-width: 900px;
-    margin: 1rem auto;
+/* кнопки под фото */
+.AvatarButtons {
     display: flex;
-    gap: 2rem;
-}
-
-.FormBlock {
     flex-direction: column;
+    gap: 0.5rem;
+    width: 360px;
 }
 
+    .AvatarButtons button {
+        padding: 0.5rem 0;
+        font-weight: 600;
+        font-size: 1rem;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        color: white;
+        transition: background-color 0.3s ease;
+    }
+
+.Btn.upload {
+    background: #f89f1b;
+}
+
+    .Btn.upload:hover {
+        background: #d87f00;
+    }
+
+.Btn.delete {
+    background: #d9332e;
+}
+
+    .Btn.delete:hover {
+        background: #a62a27;
+    }
+
+/* Правая часть: поля */
 .FieldsBlock {
-    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 0;
 }
 
-/* Ïîëå ââîäà */
-.Field {
+/* Строка формы */
+.FormRow {
     display: flex;
     align-items: center;
     gap: 1rem;
-    margin-bottom: 1rem;
 }
 
-    .Field label {
-        width: 150px;
-        font-weight: 500;
+    .FormRow label {
+        width: 180px;
+        font-weight: 600;
+        font-size: 16px;
+        flex-shrink: 0;
     }
 
-    .Field input, .Field select {
+    .FormRow input,
+    .FormRow select {
         flex: 1;
-        padding: .5rem;
-        border: 1px solid #CCC;
-        border-radius: 4px;
-        background: #F5F5F5;
+        padding: 10px 15px;
+        border-radius: 20px;
+        border: none;
+        background-color: #d9d9d9;
+        font-weight: 600;
+        font-size: 16px;
+        min-width: 0;
     }
 
-/* Ïàñïîðò */
-.PassportSection {
+/* Паспортные данные */
+.PassportInputs {
     display: flex;
-    gap: 2rem;
-    margin-bottom: 1rem;
-}
-
-.PassportField {
-    display: flex;
-    flex-direction: column;
-    gap: .5rem;
-}
-
-.PassportNumbers {
-    display: flex;
-    gap: .5rem;
-}
-
-    .PassportNumbers input {
-        width: 3rem;
-        text-align: center;
-        padding: .5rem;
-        border: 1px solid #CCC;
-        border-radius: 4px;
-        background: #F5F5F5;
-    }
-
-/* Êíîïêè */
-.ActionButtons, .AddEmployee .ActionButtons {
-    display: flex;
-    justify-content: flex-end;
     gap: 1rem;
+    flex: 1;
+}
+
+.PassportSeries,
+.PassportNumber {
+    display: flex;
+    gap: 0.5rem;
+}
+
+    .PassportSeries input,
+    .PassportNumber input {
+        width: 38px;
+        height: 38px;
+        padding: 0;
+        border-radius: 8px;
+        background-color: #d9d9d9;
+        border: none;
+        text-align: center;
+        font-weight: 600;
+        font-size: 16px;
+    }
+
+/* Кнопки действий */
+.ActionButtons {
+    justify-content: flex-end;
     margin-top: 1rem;
 }
 
-.Btn {
-    padding: .5rem 1rem;
+.Btn.save {
+    background-color: #f89f1b;
+    color: white;
+    border-radius: 20px;
+    padding: 8px 24px;
+    font-weight: 600;
+    font-size: 16px;
     border: none;
-    border-radius: 4px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-    .Btn.save {
-        background: #4CAF50;
-        color: #fff;
+    .Btn.save:hover {
+        background-color: #d87f00;
     }
-
-        .Btn.save:hover {
-            background: #45A049;
-        }
-
-    .Btn.delete {
-        background: #F44336;
-        color: #fff;
-    }
-
-        .Btn.delete:hover {
-            background: #D32F2F;
-        }
-
-    .Btn.upload {
-        background: #1976D2;
-        color: #fff;
-        margin-bottom: .5rem;
-    }
-
-        .Btn.upload:hover {
-            background: #1565C0;
-        }
-
-.Error {
-    color: #F44336;
-    margin-top: .5rem;
-}

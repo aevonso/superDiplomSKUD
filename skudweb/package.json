@@ -14,8 +14,10 @@
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.1",
     "qrcode.react": "^4.2.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-input-mask": "^2.0.4",
+    "react-phone-number-input": "^3.4.12",
     "react-qr-code": "^2.0.15",
     "react-router-dom": "^7.5.2",
     "sweetalert2": "^11.21.0"

@@ -91,21 +91,34 @@ namespace serverSKUD.Controllers
         [HttpPost]
         public async Task<ActionResult<Employee>> Create([FromBody] EmployeeCreateDto dto)
         {
-            // проверяем уникальность
+            // Проверка входных данных
+            if (string.IsNullOrWhiteSpace(dto.Email) || !dto.Email.Contains("@"))
+                return BadRequest(new { message = "Некорректный формат email" });
+
+            if (string.IsNullOrWhiteSpace(dto.Login))
+                return BadRequest(new { message = "Логин не может быть пустым" });
+
+            if (string.IsNullOrWhiteSpace(dto.PhoneNumber))
+                return BadRequest(new { message = "Номер телефона не может быть пустым" });
+
+            if (string.IsNullOrWhiteSpace(dto.PassportSeria) || string.IsNullOrWhiteSpace(dto.PassportNumber))
+                return BadRequest(new { message = "Паспортные данные не могут быть пустыми" });
+
+            // Проверка уникальности
             if (await _db.Employees.AnyAsync(e => e.Email == dto.Email))
-                return BadRequest(new { message = "Email уже занят" });
+                return BadRequest(new { message = "Email уже используется" });
 
             if (await _db.Employees.AnyAsync(e => e.Login == dto.Login))
-                return BadRequest(new { message = "Login уже занят" });
+                return BadRequest(new { message = "Логин уже используется" });
 
             if (await _db.Employees.AnyAsync(e => e.PhoneNumber == dto.PhoneNumber))
-                return BadRequest(new { message = "Телефон уже используется" });
+                return BadRequest(new { message = "Номер телефона уже используется" });
 
             if (await _db.Employees.AnyAsync(e =>
                 e.PassportSeria == dto.PassportSeria &&
                 e.PassportNumber == dto.PassportNumber))
             {
-                return BadRequest(new { message = "Такой паспорт уже зарегистрирован" });
+                return BadRequest(new { message = "Паспорт уже зарегистрирован" });
             }
 
             var emp = new Employee
@@ -140,28 +153,38 @@ namespace serverSKUD.Controllers
             if (emp == null)
                 return NotFound();
 
-            // --- проверка уникальности email ---
+            // Проверка входных данных
+            if (string.IsNullOrWhiteSpace(dto.Email) || !dto.Email.Contains("@"))
+                return BadRequest(new { message = "Некорректный формат email" });
+
+            if (string.IsNullOrWhiteSpace(dto.Login))
+                return BadRequest(new { message = "Логин не может быть пустым" });
+
+            if (string.IsNullOrWhiteSpace(dto.PhoneNumber))
+                return BadRequest(new { message = "Номер телефона не может быть пустым" });
+
+            if (string.IsNullOrWhiteSpace(dto.PassportSeria) || string.IsNullOrWhiteSpace(dto.PassportNumber))
+                return BadRequest(new { message = "Паспортные данные не могут быть пустыми" });
+
+            // Проверка уникальности
             if (await _db.Employees.AnyAsync(e => e.Email == dto.Email && e.Id != id))
-                return BadRequest(new { message = "Email уже занят" });
+                return BadRequest(new { message = "Email уже используется" });
 
-            // проверка логина
             if (await _db.Employees.AnyAsync(e => e.Login == dto.Login && e.Id != id))
-                return BadRequest(new { message = "Login уже занят" });
+                return BadRequest(new { message = "Логин уже используется" });
 
-            // проверка телефона
             if (await _db.Employees.AnyAsync(e => e.PhoneNumber == dto.PhoneNumber && e.Id != id))
-                return BadRequest(new { message = "Телефон уже используется" });
+                return BadRequest(new { message = "Номер телефона уже используется" });
 
-            // проверка паспорта
             if (await _db.Employees.AnyAsync(e =>
                 e.Id != id &&
                 e.PassportSeria == dto.PassportSeria &&
                 e.PassportNumber == dto.PassportNumber))
             {
-                return BadRequest(new { message = "Такой паспорт уже зарегистрирован" });
+                return BadRequest(new { message = "Паспорт уже зарегистрирован" });
             }
 
-            // обновляем данные
+            // Обновление данных сотрудника
             emp.LastName = dto.LastName;
             emp.FirstName = dto.FirstName;
             emp.Patronymic = dto.Patronymic;
@@ -219,7 +242,21 @@ namespace serverSKUD.Controllers
 
             return NoContent();
         }
+        [HttpPost("check-unique")]
+        public async Task<IActionResult> CheckUnique([FromBody] CheckUniqueDto dto)
+        {
+            var result = new
+            {
+                emailExists = await _db.Employees.AnyAsync(e => e.Email == dto.Email),
+                loginExists = await _db.Employees.AnyAsync(e => e.Login == dto.Login),
+                phoneNumberExists = await _db.Employees.AnyAsync(e => e.PhoneNumber == dto.PhoneNumber),
+                passportExists = await _db.Employees.AnyAsync(e =>
+                    e.PassportSeria == dto.PassportSeria &&
+                    e.PassportNumber == dto.PassportNumber)
+            };
 
+            return Ok(result);
+        }
         // DELETE: api/Employee/5/avatar
         [HttpDelete("{id:int}/avatar")]
         public async Task<IActionResult> DeleteAvatar(int id)
