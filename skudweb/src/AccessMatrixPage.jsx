@@ -80,8 +80,11 @@ export default function AccessMatrixPage() {
                     <nav>
                         <a href="/employees">Сотрудники</a>
                         <a href="/devices">Устройства</a>
-                        <a href="/accessmatrix" className="active" > Матрица доступа</a>
+                        <a href="/accessmatrix" className="active">Матрица доступа</a>
                         <a href="/dashboard">Лог событий</a>
+                        <a href="/rooms">Помещения</a>
+                        <a href="/divisions">Подразделения</a>
+                        <a href="/posts">Должности</a>
                         <a href="/reports">Отчёты</a>
                         <a href="/setting">Настройки</a>
                     </nav>

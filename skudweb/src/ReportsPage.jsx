@@ -58,10 +58,13 @@ export default function ReportsPage() {
                     <nav>
                         <a href="/employees">Сотрудники</a>
                         <a href="/devices">Устройства</a>
-                        <a href="/passes">Пропуски</a>
+                        <a href="/accessmatrix" >Матрица доступа</a>
                         <a href="/dashboard">Лог событий</a>
+                        <a href="/rooms">Помещения</a>
+                        <a href="/divisions">Подразделения</a>
+                        <a href="/posts">Должности</a>
                         <a href="/reports" className="active">Отчёты</a>
-                        <a href="/settings">Настройки</a>
+                        <a href="/setting">Настройки</a>
                     </nav>
                 </aside>
 
