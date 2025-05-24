@@ -1,19 +1,25 @@
-.RoomCardPage {
-    font-family: sans-serif;
-    background: #f8f9fa;
-    min-height: 100vh;
+/* Сброс */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
+body, #root {
+    font-family: Arial, sans-serif;
+}
+
+/* Header */
 .Header {
     display: flex;
     align-items: center;
-    background: #2b7cd3;
+    background: #0057E7;
     padding: 1rem;
 }
 
 .BackLink {
+    color: #fff;
     font-size: 1.5rem;
-    color: white;
     margin-right: 1rem;
     text-decoration: none;
 }
@@ -22,51 +28,62 @@
     height: 40px;
 }
 
+/* Страница */
+.RoomCardPage {
+    background: #f8f9fa;
+    min-height: 100vh;
+}
+
 .RoomCardMain {
-    max-width: 600px;
+    max-width: 450px;
     margin: 2rem auto;
-    background: white;
-    padding: 2rem;
-    border-radius: 1rem;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    text-align: center;
+    background: #fff;
+    padding: 1.2rem;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+
+/* Форма */
+.Form {
+    display: flex;
+    flex-direction: column;
+    gap: .8rem;
 }
 
 .Field {
-    margin-bottom: 1.5rem;
-    text-align: left;
+    display: flex;
+    flex-direction: column;
 }
 
     .Field label {
-        display: block;
         font-weight: bold;
-        margin-bottom: .5rem;
+        margin-bottom: .4rem;
+        font-size: 13px;
     }
 
-    .Field input,
-    .Field select {
-        width: 100%;
-        padding: .5rem;
-        border-radius: 8px;
+    .Field select,
+    .Field input {
+        padding: .4rem;
+        font-size: 13px;
         border: 1px solid #ccc;
-        background: #eee;
+        border-radius: 4px;
+        background: #f1f1f1;
     }
 
+/* Кнопки */
 .Buttons {
     display: flex;
-    justify-content: space-around;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-    gap: 1rem;
+    gap: .5rem;
 }
 
 .Btn {
-    padding: .6rem 1rem;
+    flex: 1;
+    padding: .45rem;
+    font-size: 13px;
     border: none;
-    border-radius: 20px;
-    font-weight: 600;
+    border-radius: 16px;
+    color: #fff;
     cursor: pointer;
-    color: white;
 }
 
     .Btn.red {
@@ -81,35 +98,94 @@
         background: #4caf50;
     }
 
-    .Btn.blue {
-        background: #2196f3;
-    }
-
+/* QR-блок */
 .QRBox {
-    margin: 1.5rem 0;
-    min-height: 220px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    min-height: 240px;
     border: 1px solid #ddd;
+    border-radius: 4px;
     padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .Spinner {
-    border: 8px solid #eee;
-    border-top: 8px solid #4caf50;
+    width: 36px;
+    height: 36px;
+    border: 6px solid #eee;
+    border-top: 6px solid #4caf50;
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
     animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
+    to {
         transform: rotate(360deg);
     }
+}
+
+/* Обёртка QR и подписи */
+.QRWrapper {
+    text-align: center;
+}
+
+/* Заголовок QR-кода */
+.QRHeader {
+    font-size: 24px;
+    margin-bottom: 32px;
+}
+
+/* Контейнер под сам QR */
+.qr-wrapper {
+    background: #fff;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    margin-bottom: 24px;
+}
+
+/* Инфо-подписи */
+.qr-info {
+    text-align: center;
+}
+
+.room-label {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.lifetime {
+    font-size: 16px;
+    color: #555;
+}
+
+/* Список доступных должностей */
+.AccessList {
+    margin-top: .6rem;
+    text-align: left;
+}
+
+.AccessTitle {
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: .3rem;
+}
+
+.AccessList ul {
+    list-style: disc;
+    padding-left: 1.4rem;
+}
+
+.AccessList li {
+    font-size: 12px;
+    margin-bottom: .2rem;
+}
+
+/* Кнопка скачивания PDF */
+.Btn.blue {
+    background: #2196f3;
+    padding: .45rem 1rem;
+    font-size: 13px;
+    margin-top: .6rem;
 }

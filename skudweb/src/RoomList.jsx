@@ -1,14 +1,17 @@
-﻿import React, { useEffect, useState, useRef } from 'react';
+﻿// src/RoomList.jsx
+import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import apiClient from './apiClient';
 import logo from './assets/natk-logo.png';
 import QRCode from 'react-qr-code';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { fetchPostsWithAccess } from './accessMatrixApi';
 import './ListPage.css';
 
 export default function RoomList() {
     const [rooms, setRooms] = useState([]);
+    const [accessMap, setAccessMap] = useState({}); // { [roomId]: [posts...] }
     const [q, setQ] = useState('');
     const [collapsed, setCollapsed] = useState(
         () => JSON.parse(localStorage.getItem('sidebar-collapsed') || 'false')
@@ -16,37 +19,65 @@ export default function RoomList() {
     const navigate = useNavigate();
     const batchRef = useRef();
 
-    // загрузка списка помещений
+    // 1) Загрузить список всех помещений
     useEffect(() => {
-        apiClient.get('/api/Room').then(r => setRooms(r.data));
+        apiClient.get('/api/Room').then(r => {
+            setRooms(r.data);
+        });
     }, []);
 
+    // 2) Для каждого помещения подгружаем матрицу доступа
+    useEffect(() => {
+        rooms.forEach(rm => {
+            fetchPostsWithAccess(rm.id)
+                .then(all => {
+                    // фильтруем только те должности, у которых hasAccess=true
+                    const allowed = all.filter(p => p.hasAccess);
+                    setAccessMap(m => ({ ...m, [rm.id]: allowed }));
+                })
+                .catch(() => {
+                    // игнорируем ошибку одной комнаты
+                    console.error(`Не удалось загрузить доступы для помещения ${rm.id}`);
+                });
+        });
+    }, [rooms]);
+
+    // 3) Фильтр по поиску
     const filtered = rooms.filter(rm =>
         rm.name.toLowerCase().includes(q.toLowerCase()) ||
         rm.floor?.name.toLowerCase().includes(q.toLowerCase())
     );
 
-    // генерировать PDF с QR для всех помещений
+    // 4) Генерация PDF: только для тех комнат, где есть хотя бы одна должность
     const generateAllQR = async () => {
-        if (!rooms.length) {
-            alert('Список помещений пуст');
-            return;
+        // отбрасываем те, у которых нет accessMap[roomId] или оно пустое
+        const toPrint = rooms.filter(rm =>
+            Array.isArray(accessMap[rm.id]) && accessMap[rm.id].length > 0
+        );
+        if (!toPrint.length) {
+            return alert('Нет помещений с доступными должностями');
         }
 
-        // ждём рендер скрытых .qr-page
+        // ждём, пока React отрисует скрытые страницы
         await new Promise(res => setTimeout(res, 100));
 
         const pdf = new jsPDF('p', 'pt', 'a4');
         const pages = batchRef.current.children;
+        let pageIndex = 0;
 
-        for (let i = 0; i < pages.length; i++) {
-            const el = pages[i];
+        for (let el of pages) {
+            // рендерим только те <div> в порядке toPrint
+            const id = Number(el.dataset.roomId);
+            if (!toPrint.find(r => r.id === id)) continue;
+
             const canvas = await html2canvas(el, { scale: 2 });
             const img = canvas.toDataURL('image/png');
             const w = pdf.internal.pageSize.getWidth();
             const h = (canvas.height * w) / canvas.width;
-            if (i > 0) pdf.addPage();
+
+            if (pageIndex > 0) pdf.addPage();
             pdf.addImage(img, 'PNG', 0, 0, w, h);
+            pageIndex++;
         }
 
         pdf.save('all_rooms_qr.pdf');
@@ -75,8 +106,11 @@ export default function RoomList() {
                     <nav>
                         <a href="/employees">Сотрудники</a>
                         <a href="/devices">Устройства</a>
-                        <a href="/accessmatrix" className="active">Матрица доступа</a>
+                        <a href="/accessmatrix">Матрица доступа</a>
                         <a href="/dashboard">Лог событий</a>
+                        <a href="/rooms" className="active">Помещения</a>
+                        <a href="/divisions">Подразделения</a>
+                        <a href="/posts">Должности</a>
                         <a href="/reports">Отчёты</a>
                         <a href="/setting">Настройки</a>
                     </nav>
@@ -98,11 +132,7 @@ export default function RoomList() {
                     <div className="TableWrapper">
                         <table className="ListTable">
                             <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Номер помещения</th>
-                                    <th>Этаж</th>
-                                </tr>
+                                <tr><th>ID</th><th>Номер помещения</th><th>Этаж</th></tr>
                             </thead>
                             <tbody>
                                 {filtered.map(rm => (
@@ -128,21 +158,35 @@ export default function RoomList() {
                 </main>
             </div>
 
-            {/* Скрытый контейнер с макетами страниц для PDF */}
+            {/* Скрытый контейнер: для каждой комнаты отрисовываем QR-страницу */}
             <div className="QRBatchContainer" ref={batchRef}>
                 {rooms.map(rm => {
+                    const allowed = accessMap[rm.id] || [];
+                    // отрисовываем, но дальше в PDF уйдут только те, у которых allowed.length>0
                     const expires = new Date(Date.now() + 1.5 * 3600 * 1000);
                     const hh = expires.getHours().toString().padStart(2, '0');
                     const mm = expires.getMinutes().toString().padStart(2, '0');
                     return (
-                        <div key={rm.id} className="qr-page">
-                            <h2 className="qr-header">QR-код для всех помещений</h2>
+                        <div
+                            key={rm.id}
+                            className="qr-page"
+                            data-room-id={rm.id}
+                        >
+                            <h2 className="qr-header">QR-код для помещения №{rm.name}</h2>
                             <div className="qr-wrapper">
-                                <QRCode value={JSON.stringify({ roomId: rm.id })} size={200} />
+                                <QRCode value={JSON.stringify({ roomId: rm.id })} size={150} />
                             </div>
                             <div className="qr-info">
                                 <div className="room-label">Помещение №{rm.name}</div>
                                 <div className="lifetime">Время работы: {hh}:{mm}</div>
+                                {allowed.length > 0 && (
+                                    <div className="access-list">
+                                        <strong>Доступно должностям:</strong>
+                                        <ul>
+                                            {allowed.map(p => <li key={p.id}>{p.name}</li>)}
+                                        </ul>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     );

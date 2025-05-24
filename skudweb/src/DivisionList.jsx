@@ -38,12 +38,15 @@ export default function DivisionList() {
             <div className="Body">
                 <aside className={`Sidebar ${collapsed ? 'collapsed' : ''}`}>
                     <nav>
-                        <NavLink to="/employees">Сотрудники</NavLink>
-                        <NavLink to="/devices">Устройства</NavLink>
-                        <NavLink to="/accessmatrix">Матрица доступа</NavLink>
-                        <NavLink to="/logs">Лог событий</NavLink>
-                        <NavLink to="/reports">Отчёты</NavLink>
-                        <NavLink to="/settings">Настройки</NavLink>
+                        <a href="/employees">Сотрудники</a>
+                        <a href="/devices">Устройства</a>
+                        <a href="/accessmatrix" >Матрица доступа</a>
+                        <a href="/dashboard">Лог событий</a>
+                        <a href="/rooms">Помещения</a>
+                        <a href="/divisions" className="active">Подразделения</a>
+                        <a href="/posts">Должности</a>
+                        <a href="/reports">Отчёты</a>
+                        <a href="/setting">Настройки</a>
                     </nav>
                 </aside>
 
