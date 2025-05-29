@@ -1,7 +1,31 @@
-﻿import React, { useEffect, useState } from 'react';
-import { fetchStats, fetchAttempts } from './dashboardApi';
+﻿import React, { useEffect, useState, useRef } from 'react';
+import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import logo from './assets/natk-logo.png';
 import './Dashboard.css';
+
+// Полные URL API
+const API_BASE_URL = 'https://localhost:7267/api/Dashboard';
+const SIGNALR_HUB_URL = 'https://localhost:7267/hubs/logs';
+
+// Функции для fetch запросов с полным адресом API
+async function fetchStats() {
+    const resp = await fetch(`${API_BASE_URL}/stats`);
+    if (!resp.ok) throw new Error('Ошибка получения статистики');
+    return resp.json();
+}
+
+async function fetchAttempts(params = {}) {
+    const q = new URLSearchParams();
+    if (params.from) q.append('from', params.from);
+    if (params.to) q.append('to', params.to);
+    if (params.pointId) q.append('pointId', String(params.pointId));
+    if (params.employeeId) q.append('employeeId', String(params.employeeId));
+    q.append('take', String(params.take ?? 10));
+
+    const resp = await fetch(`${API_BASE_URL}/attempts?${q.toString()}`);
+    if (!resp.ok) throw new Error('Ошибка получения попыток');
+    return resp.json();
+}
 
 export default function Dashboard() {
     const [counts, setCounts] = useState({ employees: 0, devices: 0, attempts: 0 });
@@ -11,34 +35,62 @@ export default function Dashboard() {
         return saved ? JSON.parse(saved) : false;
     });
 
-    // фильтры — локальные поля формы
     const [filterInputs, setFilterInputs] = useState({
-        from: '', to: '', pointId: '', employeeId: ''
+        from: '',
+        to: '',
+        pointId: '',
+        employeeId: ''
     });
-    // собственно фильтры, по которым делаем запрос
     const [filters, setFilters] = useState({ take: 10 });
 
-    // сохранить состояние сайдбара
+    const connection = useRef(null);
+
     useEffect(() => {
         localStorage.setItem('sidebar-collapsed', JSON.stringify(collapsed));
     }, [collapsed]);
 
-    // при изменении filters — заново фетчим данные
     useEffect(() => {
-        // stats
         fetchStats().then(dto => {
             setCounts(c => ({
                 ...c,
                 employees: dto.employeesCount,
                 devices: dto.devicesCount
-            }));
+            })).catch(console.error);
         });
-        // attempts
+
         fetchAttempts(filters).then(arr => {
             setAttempts(arr);
             setCounts(c => ({ ...c, attempts: arr.length }));
-        });
+        }).catch(console.error);
     }, [filters]);
+
+    useEffect(() => {
+        const conn = new HubConnectionBuilder()
+            .withUrl(SIGNALR_HUB_URL)
+            .configureLogging(LogLevel.Information)
+            .withAutomaticReconnect()
+            .build();
+
+        conn.start()
+            .then(() => console.log('SignalR Connected'))
+            .catch(e => console.error('SignalR Connection Error:', e));
+
+        conn.on('ReceiveLog', (log) => {
+            setAttempts(prev => {
+                const newList = [log, ...prev];
+                return newList.slice(0, 50);
+            });
+            setCounts(c => ({ ...c, attempts: c.attempts + 1 }));
+        });
+
+        connection.current = conn;
+
+        return () => {
+            if (connection.current) {
+                connection.current.stop();
+            }
+        };
+    }, []);
 
     function onApply() {
         setFilters({

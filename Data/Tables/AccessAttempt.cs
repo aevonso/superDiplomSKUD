@@ -23,7 +23,7 @@ namespace Data.Tables
         public Employee Employee { get; set; } = null!;
 
         [ForeignKey("PointOfPassage")]
-        public int PointOfPassageId { get; set; }
+        public int? PointOfPassageId { get; set; }
         public PointOfPassage PointOfPassage { get; set; } = null!;
 
         public DateTime Timestamp { get; set; } = DateTime.UtcNow;
