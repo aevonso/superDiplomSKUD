@@ -23,6 +23,8 @@ using DashboardDomain.Queries.Object;
 using DashboardDomain.Queries;
 using EmployeeDomain.Queiries;
 using System.Text.Json.Serialization;
+using serverSKUD.Hubs;
+using Xceed.Document.NET;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -151,6 +153,7 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<
     IQueryService<GetFilteredAttemptsQuery, IEnumerable<AttemptDto>>,
     GetFilteredAttemptsQueryService>();
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -171,6 +174,7 @@ app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapHub<LogHub>("/hubs/logs");
 app.MapControllers();
 
 app.Run();

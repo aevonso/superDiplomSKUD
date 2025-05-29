@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@microsoft/signalr": "^8.0.7",
     "@pdf-lib/fontkit": "^1.1.1",
     "axios": "^1.8.4",
     "html2canvas": "^1.4.1",
