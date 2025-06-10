@@ -18,6 +18,12 @@ export default function RegisterMobileDevicePage() {
         fetchEmployees().then(setEmployees);
     }, []);
 
+    const generateDeviceCode = () => {
+        // Генерация случайного 6-значного кода
+        const randomCode = Math.floor(100000 + Math.random() * 900000).toString();
+        setDeviceCode(randomCode); // Сохранение сгенерированного кода
+    };
+
     const handleSubmit = async () => {
         if (!deviceName || !deviceCode || !employerId) {
             await Swal.fire({
@@ -98,10 +104,18 @@ export default function RegisterMobileDevicePage() {
                                 value={deviceCode}
                                 onChange={e => setDeviceCode(e.target.value)}
                                 required
+                                readOnly
                             />
                         </div>
 
                         <div className="ActionButtons">
+                            <button
+                                type="button"
+                                className="Btn"
+                                onClick={generateDeviceCode}  // Генерация кода
+                            >
+                                Сгенерировать код
+                            </button>
                             <button className="Btn save" onClick={handleSubmit}>
                                 Добавить устройство
                             </button>

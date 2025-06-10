@@ -1,27 +1,61 @@
-﻿import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState, useRef } from 'react';
 import { fetchMobileDevices } from './mobileDeviceApi';
+import * as signalR from '@microsoft/signalr';
 import logo from './assets/natk-logo.png';
 import { useNavigate } from 'react-router-dom';
 import './MobileDevicesPage.css';
 
 export default function MobileDevicesPage() {
     const [devices, setDevices] = useState([]);
-    const [filters, setFilters] = useState({ date: '', employeeName: '', deviceName: '' });
+    const [loading, setLoading] = useState(false);
+    const [filters, setFilters] = useState({
+        date: '',
+        deviceName: '',
+        employeeName: '',
+    });
     const navigate = useNavigate();
+    const hubConnection = useRef(null);
 
-    const applyFilters = async () => {
-        const data = await fetchMobileDevices(filters);
-        setDevices(data);
+    // Загрузка устройств с сервера
+    const loadDevices = async () => {
+        setLoading(true);
+        try {
+            const data = await fetchMobileDevices(filters);
+            // фильтр по имени сотрудника на клиенте, если нужно
+            const filtered = filters.employeeName
+                ? data.filter(d =>
+                    d.employeeName.toLowerCase().includes(filters.employeeName.toLowerCase())
+                )
+                : data;
+            setDevices(filtered);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const resetFilters = async () => {
-        setFilters({ date: '', employeeName: '', deviceName: '' });
-        const data = await fetchMobileDevices({});
-        setDevices(data);
-    };
-
+    // при старте компонента — загрузка + подключение SignalR
     useEffect(() => {
-        applyFilters();
+        loadDevices();
+
+        const conn = new signalR.HubConnectionBuilder()
+            .withUrl('/hubs/devicestatus')
+            .withAutomaticReconnect()
+            .build();
+
+        conn.on('DeviceStatusChanged', (deviceId, isActive) => {
+            setDevices(current =>
+                current.map(d =>
+                    d.id === deviceId ? { ...d, isActive } : d
+                )
+            );
+        });
+
+        conn.start().catch(err => console.error('SignalR error:', err));
+        hubConnection.current = conn;
+
+        return () => {
+            conn.stop();
+        };
     }, []);
 
     return (
@@ -36,7 +70,7 @@ export default function MobileDevicesPage() {
                     <nav>
                         <a href="/employees">Сотрудники</a>
                         <a href="/devices" className="active">Устройства</a>
-                        <a href="/accessmatrix" >Матрица доступа</a>
+                        <a href="/accessmatrix">Матрица доступа</a>
                         <a href="/dashboard">Лог событий</a>
                         <a href="/rooms">Помещения</a>
                         <a href="/divisions">Подразделения</a>
@@ -48,7 +82,7 @@ export default function MobileDevicesPage() {
 
                 <main className="Main">
                     <div className="Filters">
-                        <span>Фильтры: </span>
+                        <span>Фильтры:</span>
                         <input
                             type="date"
                             value={filters.date}
@@ -64,15 +98,23 @@ export default function MobileDevicesPage() {
                             value={filters.employeeName}
                             onChange={e => setFilters(f => ({ ...f, employeeName: e.target.value }))}
                         />
-                        <button onClick={applyFilters}>Применить</button>
-                        <button onClick={resetFilters}>Сбросить</button>
+                        <button onClick={loadDevices} disabled={loading}>Применить</button>
+                        <button
+                            onClick={() => {
+                                setFilters({ date: '', deviceName: '', employeeName: '' });
+                                loadDevices();
+                            }}
+                            disabled={loading}
+                        >
+                            Сбросить
+                        </button>
                     </div>
 
                     <table className="DevicesTable">
                         <thead>
                             <tr>
                                 <th>Сотрудник</th>
-                                <th>Имя устройства</th>
+                                <th>Устройство</th>
                                 <th>Дата регистрации</th>
                                 <th>Статус</th>
                             </tr>
@@ -86,7 +128,7 @@ export default function MobileDevicesPage() {
                                 >
                                     <td>{dev.employeeName}</td>
                                     <td>{dev.deviceName}</td>
-                                    <td>{new Date(dev.createdAt).toLocaleString()}</td>
+                                    <td>{new Date(dev.createdAt).toLocaleString('ru-RU')}</td>
                                     <td className={dev.isActive ? 'green' : 'red'}>
                                         {dev.isActive ? 'В сети' : 'Отключен'}
                                     </td>
@@ -95,7 +137,10 @@ export default function MobileDevicesPage() {
                         </tbody>
                     </table>
 
-                    <button className="AddDeviceButton" onClick={() => navigate('/devices/register')}>
+                    <button
+                        className="AddDeviceButton"
+                        onClick={() => navigate('/devices/register')}
+                    >
                         Добавить устройство
                     </button>
                 </main>
