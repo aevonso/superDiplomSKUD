@@ -36,10 +36,29 @@ public class QrAccessController : ControllerBase
 
         return Ok(posts);
     }
+    [HttpPost("validate")]
+    public async Task<ActionResult<ValidateCodeResponse>> Validate([FromBody] ValidateCodeRequest dto)
+    {
+        var device = await _db.MobileDevices
+            .FirstOrDefaultAsync(d => d.DeviceCode == dto.DeviceCode && d.IsActive);
+
+        return Ok(new ValidateCodeResponse
+        {
+            IsValid = device != null
+        });
+    }
 }
 
 
+public class ValidateCodeRequest
+{
+    public string DeviceCode { get; set; } = default!;
+}
 
+public class ValidateCodeResponse
+{
+    public bool IsValid { get; set; }
+}
 public class QrAccessDto
     {
         public int PostId { get; set; }

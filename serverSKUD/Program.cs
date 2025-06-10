@@ -25,6 +25,7 @@ using EmployeeDomain.Queiries;
 using System.Text.Json.Serialization;
 using serverSKUD.Hubs;
 using Xceed.Document.NET;
+using System.Text.Json;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -41,12 +42,25 @@ builder.Services.AddCors(options =>
             .AllowCredentials();
     });
 });
+builder.WebHost.ConfigureKestrel(options =>
+{
+    // HTTP на всех интерфейсах порт 5201
+    options.ListenAnyIP(5201);
+
+    // HTTPS на всех интерфейсах порт 7267
+    options.ListenAnyIP(7267, listenOpts =>
+    {
+        listenOpts.UseHttps();
+    });
+});
 
 builder.Services.AddControllers()
     .AddJsonOptions(opts =>
     {
-        opts.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        opts.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;  
         opts.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        opts.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+
     });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -60,7 +74,6 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-//Настройки JWT 
 builder.Services.Configure<JwtSettings>(
     builder.Configuration.GetSection("JwtSettings")
 );
@@ -157,7 +170,13 @@ builder.Services.AddSignalR();
 
 var app = builder.Build();
 
-//Swagger UI в режиме разработки
+// В Development редиректа нет, в остальных средах — есть
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
+// Swagger UI только в Development
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -167,7 +186,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection();
+// ← УБРАЛИ второй app.UseHttpsRedirection()
 
 app.UseCors("AllowFrontend");
 
@@ -175,6 +194,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapHub<LogHub>("/hubs/logs");
+app.MapHub<MobileDeviceHub>("/hubs/devicestatus");
 app.MapControllers();
 
 app.Run();

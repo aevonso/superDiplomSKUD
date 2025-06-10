@@ -39,7 +39,7 @@ export async function fetchMobileDevices(filters = {}) {
  */
 export async function fetchMobileDeviceById(id) {
     const { data } = await apiClient.get(`/api/MobileDevices/${id}`);
-    return data;
+    return data; // data.deviceCode должен приходить из API
 }
 
 /**
@@ -59,7 +59,8 @@ export async function addMobileDevice(payload) {
  * @returns {Promise<void>}
  */
 export async function updateMobileDevice(id, payload) {
-    await apiClient.put(`/api/MobileDevices/${id}`, payload);
+    const { data } = await apiClient.put(`/api/MobileDevices/${id}`, payload);
+    return data; // строка с новым deviceCode
 }
 
 /**

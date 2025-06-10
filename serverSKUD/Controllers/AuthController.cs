@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using serverSKUD.Hubs;
 using Data;
 using Data.Tables;
-using System.Threading.Tasks;
-using System;
 using AutorizationDomain.Queries.Object;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
-using serviceSKUD;
+using Data.Tables.Data.Tables;
 
 namespace serverSKUD.Controllers
 {
@@ -17,81 +17,115 @@ namespace serverSKUD.Controllers
     [AllowAnonymous]
     public class AuthController : ControllerBase
     {
-        private readonly IQueryService<EntryDto, AuthResult> _loginService;
-        private readonly IQueryService<RefreshDto, AuthResult> _refreshService;
         private readonly Connection _dbContext;
         private readonly IHubContext<LogHub> _logHub;
 
-        public AuthController(
-            IQueryService<EntryDto, AuthResult> loginService,
-            IQueryService<RefreshDto, AuthResult> refreshService,
-            Connection dbContext,
-            IHubContext<LogHub> logHub)
+        public AuthController(Connection dbContext, IHubContext<LogHub> logHub)
         {
-            _loginService = loginService;
-            _refreshService = refreshService;
             _dbContext = dbContext;
             _logHub = logHub;
         }
 
-        [HttpPost("login")]
-        public async Task<ActionResult<AuthResult>> Login([FromBody] EntryDto dto)
+        // DTO ответа
+        public class LoginResponse
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            public string Message { get; set; } = default!;
+            public string? Token { get; set; }
+        }
 
-            var authResult = _loginService.Execute(dto);
-            bool success = authResult != null;
+        // POST auth/login
+        [HttpPost("login")]
+        public async Task<ActionResult<LoginResponse>> Login([FromBody] EntryDto dto)
+        {
+            // 1) Проверяем тело запроса
+            if (dto == null
+                || string.IsNullOrWhiteSpace(dto.Login)
+                || string.IsNullOrWhiteSpace(dto.Password))
+            {
+                return BadRequest(new LoginResponse
+                {
+                    Message = "Логин и пароль обязательны."
+                });
+            }
 
-            // Получаем сотрудника, если есть
+            // 2) Ищем пользователя
             var employee = await _dbContext.Employees
                 .AsNoTracking()
                 .FirstOrDefaultAsync(e => e.Login == dto.Login);
 
-            // Записываем лог попытки входа
+            // 3) Неверные данные
+            if (employee == null || employee.Password != dto.Password)
+            {
+                await LogFailedAttempt(dto.Login);
+                return Unauthorized(new LoginResponse
+                {
+                    Message = "Неверный логин или пароль."
+                });
+            }
+
+            // 4) Успешная авторизация
+            await LogSuccessfulAttempt(employee);
+            var token = GenerateToken(employee);
+
+            return Ok(new LoginResponse
+            {
+                Message = "Вход выполнен успешно.",
+                Token = token
+            });
+        }
+
+        private async Task LogFailedAttempt(string login)
+        {
             var log = new AccessAttempt
             {
-                EmployeeId = employee?.Id ?? 0,
-                PointOfPassageId = null, // null вместо 0
+                EmployeeId = 0,
+                PointOfPassageId = null,
                 Timestamp = DateTime.UtcNow,
-                Success = success,
-                FailureReason = success ? null : "Неверный логин или пароль",
+                Success = false,
+                FailureReason = "Неверный логин или пароль",
                 IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown"
             };
-            if (log.IpAddress == "::1")
-            {
-                log.IpAddress = "127.0.0.1";
-            }
             _dbContext.AccessAttempts.Add(log);
             await _dbContext.SaveChangesAsync();
 
-            // Отправляем лог в SignalR
             await _logHub.Clients.All.SendAsync("ReceiveLog", new
             {
                 timestamp = log.Timestamp,
-                employeeFullName = employee != null ? $"{employee.LastName} {employee.FirstName}" : "Неизвестный пользователь",
+                employeeFullName = "Неизвестный пользователь",
                 pointName = "Авторизация",
                 ipAddress = log.IpAddress,
                 success = log.Success,
                 failureReason = log.FailureReason
             });
-
-            if (!success)
-                return Unauthorized(new { message = "Неверный логин или пароль" });
-
-            return Ok(authResult);
         }
-        [HttpPost("refresh")]
-        public ActionResult<AuthResult> Refresh([FromBody] RefreshDto dto)
+
+        private async Task LogSuccessfulAttempt(Employee employee)
         {
-            if (dto == null || string.IsNullOrWhiteSpace(dto.RefreshToken))
-                return BadRequest(new { message = "Не указан refreshToken" });
+            var log = new AccessAttempt
+            {
+                EmployeeId = employee.Id,
+                PointOfPassageId = null,
+                Timestamp = DateTime.UtcNow,
+                Success = true,
+                FailureReason = null,
+                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown"
+            };
+            _dbContext.AccessAttempts.Add(log);
+            await _dbContext.SaveChangesAsync();
 
-            var authResult = _refreshService.Execute(dto);
-            if (authResult == null)
-                return Unauthorized(new { message = "Неверный или просроченный refreshToken" });
-
-            return Ok(authResult);
+            await _logHub.Clients.All.SendAsync("ReceiveLog", new
+            {
+                timestamp = log.Timestamp,
+                employeeFullName = $"{employee.LastName} {employee.FirstName}",
+                pointName = "Авторизация",
+                ipAddress = log.IpAddress,
+                success = log.Success,
+                failureReason = log.FailureReason
+            });
         }
+
+        // Простая генерация токена (можно заменить на JWT)
+        private string GenerateToken(Employee employee)
+            => $"{employee.Id}-{Guid.NewGuid()}";
     }
 }

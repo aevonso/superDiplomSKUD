@@ -21,20 +21,22 @@ export default function MobileDeviceCard() {
 
     const handleUpdate = async () => {
         try {
-            await updateMobileDevice(id, {
-                deviceName: device.deviceName,
-                deviceCode: device.deviceCode
+            // отправляем только имя — получаем новый код
+            const newCode = await updateMobileDevice(id, {
+                deviceName: device.deviceName
             });
+            setDevice({ ...device, deviceCode: newCode });
+
             await Swal.fire({
                 icon: 'success',
                 title: 'Обновлено',
+                text: `Новый код: ${newCode}`,
                 timer: 1200,
                 toast: true,
                 position: 'top-end',
                 showConfirmButton: false
             });
-        } catch (err) {
-            console.error(err);
+        } catch {
             await Swal.fire({
                 icon: 'error',
                 title: 'Ошибка при обновлении'
@@ -55,8 +57,7 @@ export default function MobileDeviceCard() {
             try {
                 await deleteMobileDevice(id);
                 navigate('/devices');
-            } catch (err) {
-                console.error(err);
+            } catch {
                 await Swal.fire({
                     icon: 'error',
                     title: 'Ошибка при удалении'
@@ -95,15 +96,16 @@ export default function MobileDeviceCard() {
                         </div>
                         <div className="Field">
                             <label>Код устройства:</label>
-                            <input
-                                value={device.deviceCode}
-                                onChange={e => setDevice({ ...device, deviceCode: e.target.value })}
-                            />
+                            <input value={device.deviceCode} readOnly />
                         </div>
 
                         <div className="ActionButtons">
-                            <button className="Btn upload" onClick={handleUpdate}>Обновить устройство</button>
-                            <button className="Btn delete" onClick={handleDelete}>Удалить устройство</button>
+                            <button className="Btn upload" onClick={handleUpdate}>
+                                Обновить устройство &amp; сгенерировать код
+                            </button>
+                            <button className="Btn delete" onClick={handleDelete}>
+                                Удалить устройство
+                            </button>
                         </div>
                     </div>
                 </div>
