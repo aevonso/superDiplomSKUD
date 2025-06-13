@@ -52,17 +52,21 @@ namespace Data.Repository
             var efList = await _db.AccessAttempts
                                   .AsNoTracking()
                                   .Include(a => a.Employee)
-                                  .Include(a => a.PointOfPassage).ThenInclude(p => p.Room)
+                                  .Include(a => a.PointOfPassage)
+                                      .ThenInclude(p => p.Room)
                                   .OrderByDescending(a => a.Timestamp)
                                   .Take(take)
                                   .ToListAsync();
 
             return efList.Select(a => new AttemptDto
             {
-                EmployeeFullName = $"{a.Employee.LastName} {a.Employee.FirstName[0]}.",
-                RoomName = a.PointOfPassage.Room.Name,
-                PointName = a.PointOfPassage.Name,
-                IpAddress = a.PointOfPassage.IpAddress,
+                // Проверка на null для связанных объектов
+                EmployeeFullName = a.Employee != null
+                                   ? $"{a.Employee.LastName} {a.Employee.FirstName[0]}."
+                                   : "Неизвестно",  // Если Employee == null, ставим заглушку
+                RoomName = a.PointOfPassage?.Room?.Name ?? "Неизвестная комната",  // Используем null-оператор для проверки
+                PointName = a.PointOfPassage?.Name ?? "Неизвестная точка",  // Используем null-оператор
+                IpAddress = a.PointOfPassage?.IpAddress ?? "Неизвестный IP",  // Используем null-оператор
                 Timestamp = a.Timestamp,
                 Success = a.Success
             }).ToList();

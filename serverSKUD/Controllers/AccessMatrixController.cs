@@ -2,6 +2,7 @@
 using Data.Tables;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using serverSKUD.Model;
 using serverSKUD.Model.serverSKUD.Model;
 
 namespace serverSKUD.Controllers
@@ -13,26 +14,7 @@ namespace serverSKUD.Controllers
         private readonly Connection _db;
         public AccessMatrixController(Connection db) => _db = db;
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<AccessMatrix>>> GetAll(
-            [FromQuery] int? floorId,
-            [FromQuery] int? divisionId)
-        {
-            var q = _db.AccessMatrices
-                .Include(x => x.Post).ThenInclude(p => p.Division)
-                .Include(x => x.Room).ThenInclude(r => r.Floor)
-                .AsQueryable();
-
-            if (floorId.HasValue)
-                q = q.Where(x => x.Room.FloorId == floorId.Value);
-
-            if (divisionId.HasValue)
-                q = q.Where(x => x.Post.DivisionId == divisionId.Value);
-
-            var list = await q.ToListAsync();
-            return Ok(list);
-        }
-
+        // Получение всех записей матрицы доступа с возможностью фильтрации
         [HttpGet("{id:int}")]
         public async Task<ActionResult<AccessMatrix>> GetById(int id)
         {
@@ -43,7 +25,27 @@ namespace serverSKUD.Controllers
             if (x == null) return NotFound();
             return Ok(x);
         }
+            [HttpGet]
+            public async Task<ActionResult<IEnumerable<AccessMatrix>>> GetAll(
+                 [FromQuery] int? floorId,
+                 [FromQuery] int? divisionId)
+            {
+                var q = _db.AccessMatrices
+                    .Include(x => x.Post).ThenInclude(p => p.Division)
+                    .Include(x => x.Room).ThenInclude(r => r.Floor)
+                    .AsQueryable();
 
+                if (floorId.HasValue)
+                    q = q.Where(x => x.Room.FloorId == floorId.Value);
+
+                if (divisionId.HasValue)
+                    q = q.Where(x => x.Post.DivisionId == divisionId.Value);
+
+                var list = await q.ToListAsync();
+                return Ok(list);
+            }
+
+        // Создание новой записи в матрице доступа
         [HttpPost]
         public async Task<ActionResult<AccessMatrix>> Create([FromBody] AccessMatrixCreateDto dto)
         {
@@ -53,12 +55,13 @@ namespace serverSKUD.Controllers
             var room = await _db.Rooms.FindAsync(dto.RoomId);
             if (room == null) return BadRequest(new { message = "RoomId не найден" });
 
-            // Удаляем существующую запись для этой пары Post+Room (обеспечиваем уникальность)
+            // Проверяем, существует ли уже запись для этой пары PostId и RoomId
             var existing = await _db.AccessMatrices
                 .FirstOrDefaultAsync(x => x.PostId == dto.PostId && x.RoomId == dto.RoomId);
+
             if (existing != null)
             {
-                _db.AccessMatrices.Remove(existing);
+                return BadRequest(new { message = "Запись для данной пары PostId и RoomId уже существует" });
             }
 
             var entry = new AccessMatrix
@@ -71,23 +74,24 @@ namespace serverSKUD.Controllers
             _db.AccessMatrices.Add(entry);
             await _db.SaveChangesAsync();
 
-            await _db.Entry(entry).Reference(x => x.Post).LoadAsync();
-            await _db.Entry(entry).Reference(x => x.Room).LoadAsync();
-
             return CreatedAtAction(nameof(GetById), new { id = entry.Id }, entry);
         }
 
+
+        // Обновление записи матрицы доступа
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, [FromBody] AccessMatrix dto)
-        {
-            var x = await _db.AccessMatrices.FindAsync(id);
-            if (x == null) return NotFound();
-            x.PostId = dto.PostId;
-            x.RoomId = dto.RoomId;
-            x.IsAccess = dto.IsAccess;
-            await _db.SaveChangesAsync();
-            return NoContent();
-        }
+            public async Task<IActionResult> Update(int id, [FromBody] AccessMatrix dto)
+            {
+                var x = await _db.AccessMatrices.FindAsync(id);
+                if (x == null) return NotFound();
+                x.PostId = dto.PostId;
+                x.RoomId = dto.RoomId;
+                x.IsAccess = dto.IsAccess;
+                await _db.SaveChangesAsync();
+                return NoContent();
+            }
+        
+        // Включение/выключение доступа
         [HttpPut("{id:int}/toggle")]
         public async Task<IActionResult> ToggleAccess(int id)
         {
@@ -99,6 +103,8 @@ namespace serverSKUD.Controllers
 
             return NoContent();
         }
+
+        // Удаление записи матрицы доступа
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
