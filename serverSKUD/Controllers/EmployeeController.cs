@@ -153,7 +153,7 @@ namespace serverSKUD.Controllers
             if (emp == null)
                 return NotFound();
 
-            // Проверка входных данных
+            // Check if there are any fields to update
             if (string.IsNullOrWhiteSpace(dto.Email) || !dto.Email.Contains("@"))
                 return BadRequest(new { message = "Некорректный формат email" });
 
@@ -166,7 +166,7 @@ namespace serverSKUD.Controllers
             if (string.IsNullOrWhiteSpace(dto.PassportSeria) || string.IsNullOrWhiteSpace(dto.PassportNumber))
                 return BadRequest(new { message = "Паспортные данные не могут быть пустыми" });
 
-            // Проверка уникальности
+            // Check for uniqueness
             if (await _db.Employees.AnyAsync(e => e.Email == dto.Email && e.Id != id))
                 return BadRequest(new { message = "Email уже используется" });
 
@@ -184,23 +184,36 @@ namespace serverSKUD.Controllers
                 return BadRequest(new { message = "Паспорт уже зарегистрирован" });
             }
 
-            // Обновление данных сотрудника
-            emp.LastName = dto.LastName;
-            emp.FirstName = dto.FirstName;
-            emp.Patronymic = dto.Patronymic;
-            emp.Email = dto.Email;
-            emp.PhoneNumber = dto.PhoneNumber;
-            emp.Login = dto.Login;
-            emp.DivisionId = dto.DivisionId;
-            emp.PostId = dto.PostId;
-            emp.PassportSeria = dto.PassportSeria;
-            emp.PassportNumber = dto.PassportNumber;
+            // Only update the fields that have been modified
+            emp.LastName = dto.LastName ?? emp.LastName;
+            emp.FirstName = dto.FirstName ?? emp.FirstName;
+            emp.Patronymic = dto.Patronymic ?? emp.Patronymic;
+            emp.Email = dto.Email ?? emp.Email;
+            emp.PhoneNumber = dto.PhoneNumber ?? emp.PhoneNumber;
+            emp.Login = dto.Login ?? emp.Login;
 
+            // Update passport only if new values are provided
+            if (!string.IsNullOrWhiteSpace(dto.PassportSeria))
+                emp.PassportSeria = dto.PassportSeria;
+
+            if (!string.IsNullOrWhiteSpace(dto.PassportNumber))
+                emp.PassportNumber = dto.PassportNumber;
+
+            // Conditional update for DivisionId and PostId
+            if (dto.DivisionId != emp.DivisionId)
+                emp.DivisionId = dto.DivisionId;
+
+            if (dto.PostId != emp.PostId)
+                emp.PostId = dto.PostId;
+
+            // Save the updated employee
             _db.Entry(emp).State = EntityState.Modified;
             await _db.SaveChangesAsync();
 
             return NoContent();
         }
+
+
 
         // DELETE: api/Employee/5
         [HttpDelete("{id:int}")]

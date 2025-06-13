@@ -3,11 +3,19 @@ import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import logo from './assets/natk-logo.png';
 import './Dashboard.css';
 
-// Полные URL API
+// Utility function to format IP address
+function formatIpAddress(ipAddress) {
+    if (ipAddress === '::1') {
+        return '127.0.0.1';
+    }
+    return ipAddress.replace(/^::ffff:/, '');
+}
+
+// Full API URLs
 const API_BASE_URL = 'https://localhost:7267/api/Dashboard';
 const SIGNALR_HUB_URL = 'https://localhost:7267/hubs/logs';
 
-// Функции для fetch запросов с полным адресом API
+// Fetch functions with full API address
 async function fetchStats() {
     const resp = await fetch(`${API_BASE_URL}/stats`);
     if (!resp.ok) throw new Error('Ошибка получения статистики');
@@ -20,6 +28,7 @@ async function fetchAttempts(params = {}) {
     if (params.to) q.append('to', params.to);
     if (params.pointId) q.append('pointId', String(params.pointId));
     if (params.employeeId) q.append('employeeId', String(params.employeeId));
+    if (params.page) q.append('page', String(params.page));
     q.append('take', String(params.take ?? 10));
 
     const resp = await fetch(`${API_BASE_URL}/attempts?${q.toString()}`);
@@ -41,7 +50,9 @@ export default function Dashboard() {
         pointId: '',
         employeeId: ''
     });
-    const [filters, setFilters] = useState({ take: 10 });
+
+    const [filters, setFilters] = useState({ take: 10, page: 1 });
+    const [totalPages, setTotalPages] = useState(1);
 
     const connection = useRef(null);
 
@@ -58,9 +69,10 @@ export default function Dashboard() {
             })).catch(console.error);
         });
 
-        fetchAttempts(filters).then(arr => {
-            setAttempts(arr);
-            setCounts(c => ({ ...c, attempts: arr.length }));
+        fetchAttempts(filters).then(data => {
+            setAttempts(data.attempts);
+            setCounts(c => ({ ...c, attempts: data.totalCount }));
+            setTotalPages(Math.ceil(data.totalCount / filters.take));
         }).catch(console.error);
     }, [filters]);
 
@@ -98,12 +110,18 @@ export default function Dashboard() {
             to: filterInputs.to || undefined,
             pointId: filterInputs.pointId ? Number(filterInputs.pointId) : undefined,
             employeeId: filterInputs.employeeId ? Number(filterInputs.employeeId) : undefined,
-            take: 10
+            take: 10,
+            page: 1
         });
     }
+
     function onReset() {
         setFilterInputs({ from: '', to: '', pointId: '', employeeId: '' });
-        setFilters({ take: 10 });
+        setFilters({ take: 10, page: 1 });
+    }
+
+    function goToPage(page) {
+        setFilters({ ...filters, page });
     }
 
     return (
@@ -125,7 +143,7 @@ export default function Dashboard() {
                     <nav>
                         <a href="/employees">Сотрудники</a>
                         <a href="/devices">Устройства</a>
-                        <a href="/accessmatrix" >Матрица доступа</a>
+                        <a href="/accessmatrix">Матрица доступа</a>
                         <a href="/dashboard" className="active">Лог событий</a>
                         <a href="/rooms">Помещения</a>
                         <a href="/divisions">Подразделения</a>
@@ -187,7 +205,6 @@ export default function Dashboard() {
                                 <tr>
                                     <th>Дата/время</th>
                                     <th>Сотрудник</th>
-                                    <th>Точка</th>
                                     <th>IP-адрес</th>
                                     <th>Результат</th>
                                 </tr>
@@ -197,8 +214,7 @@ export default function Dashboard() {
                                     <tr key={i}>
                                         <td>{new Date(a.timestamp).toLocaleString()}</td>
                                         <td>{a.employeeFullName}</td>
-                                        <td>{a.pointName}</td>
-                                        <td>{a.ipAddress}</td>
+                                        <td>{formatIpAddress(a.ipAddress)}</td>
                                         <td className={a.success ? 'Success' : 'Fail'}>
                                             {a.success ? 'Успех' : 'Провал'}
                                         </td>
@@ -206,6 +222,24 @@ export default function Dashboard() {
                                 ))}
                             </tbody>
                         </table>
+                    </section>
+
+                    <section className="Pagination">
+                        <button
+                            className="PaginationButton"
+                            onClick={() => goToPage(filters.page - 1)}
+                            disabled={filters.page <= 1}
+                        >
+                            Предыдущая
+                        </button>
+                        <span className="PageInfo">Страница {filters.page} из {totalPages}</span>
+                        <button
+                            className="PaginationButton"
+                            onClick={() => goToPage(filters.page + 1)}
+                            disabled={filters.page >= totalPages}
+                        >
+                            Следующая
+                        </button>
                     </section>
                 </main>
             </div>

@@ -24,6 +24,7 @@ namespace serverSKUD.Controllers
             _logHub = logHub;
         }
 
+        // Получение статистики (количество сотрудников и устройств)
         [HttpGet("stats")]
         public async Task<IActionResult> GetStats()
         {
@@ -32,13 +33,15 @@ namespace serverSKUD.Controllers
             return Ok(new { employeesCount, devicesCount });
         }
 
+        // Получение логов попыток доступа
         [HttpGet("attempts")]
         public IActionResult GetAttempts(
-            [FromQuery] DateTime? from,
-            [FromQuery] DateTime? to,
-            [FromQuery] int? pointId,
-            [FromQuery] int? employeeId,
-            [FromQuery] int take = 10)
+     [FromQuery] DateTime? from,
+     [FromQuery] DateTime? to,
+     [FromQuery] int? pointId,
+     [FromQuery] int? employeeId,
+     [FromQuery] int take = 10,
+     [FromQuery] int page = 1)
         {
             var query = _dbContext.AccessAttempts.AsQueryable();
 
@@ -51,22 +54,24 @@ namespace serverSKUD.Controllers
             if (employeeId.HasValue)
                 query = query.Where(a => a.EmployeeId == employeeId.Value);
 
+            var totalCount = query.Count();
             var attempts = query
                 .OrderByDescending(a => a.Timestamp)
+                .Skip((page - 1) * take)
                 .Take(take)
                 .Select(a => new {
                     timestamp = a.Timestamp,
                     employeeFullName = a.Employee.LastName + " " + a.Employee.FirstName,
-                    pointName = a.PointOfPassage != null ? a.PointOfPassage.Name : "Нет точки",
                     ipAddress = a.IpAddress,
                     success = a.Success
                 })
                 .ToList();
 
-            return Ok(attempts);
+            return Ok(new { attempts, totalCount });
         }
 
-        // Принимает новые логи и рассылает всем клиентам через SignalR
+
+        // Логирование попыток доступа
         [HttpPost("log")]
         public async Task<IActionResult> PostLog([FromBody] AccessAttemptDto dto)
         {
@@ -115,6 +120,7 @@ namespace serverSKUD.Controllers
             return Ok();
         }
     }
+
 
     public class AccessAttemptDto
     {

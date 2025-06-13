@@ -19,7 +19,7 @@ namespace Data.Tables
         public int Id { get; set; }
 
         [ForeignKey("Employee")]
-        public int EmployeeId { get; set; }
+        public int? EmployeeId { get; set; } 
         public Employee Employee { get; set; } = null!;
 
         [ForeignKey("PointOfPassage")]

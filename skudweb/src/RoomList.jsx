@@ -1,5 +1,4 @@
-﻿// src/RoomList.jsx
-import React, { useEffect, useState, useRef } from 'react';
+﻿import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import apiClient from './apiClient';
 import logo from './assets/natk-logo.png';
@@ -50,7 +49,6 @@ export default function RoomList() {
 
     // 4) Генерация PDF: только для тех комнат, где есть хотя бы одна должность
     const generateAllQR = async () => {
-        // отбрасываем те, у которых нет accessMap[roomId] или оно пустое
         const toPrint = rooms.filter(rm =>
             Array.isArray(accessMap[rm.id]) && accessMap[rm.id].length > 0
         );
@@ -66,7 +64,6 @@ export default function RoomList() {
         let pageIndex = 0;
 
         for (let el of pages) {
-            // рендерим только те <div> в порядке toPrint
             const id = Number(el.dataset.roomId);
             if (!toPrint.find(r => r.id === id)) continue;
 

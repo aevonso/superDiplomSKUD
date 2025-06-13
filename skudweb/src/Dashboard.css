@@ -164,3 +164,37 @@ html, body, #root {
 .Fail {
     color: red;
 }
+
+.Pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    gap: 1rem;
+}
+
+.PaginationButton {
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+    .PaginationButton:hover:not(:disabled) {
+        background-color: #3a7bc8;
+    }
+
+    .PaginationButton:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+    }
+
+.PageInfo {
+    font-size: 1rem;
+    color: #333;
+}
+
