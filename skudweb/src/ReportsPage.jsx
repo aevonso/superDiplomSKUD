@@ -12,9 +12,11 @@ export default function ReportsPage() {
     });
 
     const [options, setOptions] = useState({
-        includeEmployees: true,
-        includeMobileDevices: true,
         includeAccessAttempts: true,
+        successOnly: false,
+        failedOnly: false,
+        fromDate: '',
+        toDate: '',
     });
 
     useEffect(() => {
@@ -22,8 +24,12 @@ export default function ReportsPage() {
     }, [collapsed]);
 
     const onChange = e => {
-        const { name, checked } = e.target;
-        setOptions(prev => ({ ...prev, [name]: checked }));
+        const { name, checked, value } = e.target;
+        if (name === "fromDate" || name === "toDate") {
+            setOptions(prev => ({ ...prev, [name]: value }));
+        } else {
+            setOptions(prev => ({ ...prev, [name]: checked }));
+        }
     };
 
     const onGenerate = async format => {
@@ -71,25 +77,9 @@ export default function ReportsPage() {
                 <main className="Main">
                     <section className="ReportsContainer">
                         <h1>Генерация отчётов</h1>
-                        <p className="Subtitle">Выберите содержимое и формат отчёта</p>
+                        <p className="Subtitle">Выберите параметры для отчёта</p>
 
                         <div className="CheckboxGroup">
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    name="includeEmployees"
-                                    checked={options.includeEmployees}
-                                    onChange={onChange}
-                                /> Сотрудники
-                            </label>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    name="includeMobileDevices"
-                                    checked={options.includeMobileDevices}
-                                    onChange={onChange}
-                                /> Мобильные устройства
-                            </label>
                             <label>
                                 <input
                                     type="checkbox"
@@ -97,6 +87,43 @@ export default function ReportsPage() {
                                     checked={options.includeAccessAttempts}
                                     onChange={onChange}
                                 /> Попытки доступа
+                            </label>
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="successOnly"
+                                    checked={options.successOnly}
+                                    onChange={onChange}
+                                /> Удачные попытки
+                            </label>
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="failedOnly"
+                                    checked={options.failedOnly}
+                                    onChange={onChange}
+                                /> Неудачные попытки
+                            </label>
+                        </div>
+
+                        <div className="DateRangeGroup">
+                            <label>
+                                От:
+                                <input
+                                    type="date"
+                                    name="fromDate"
+                                    value={options.fromDate}
+                                    onChange={onChange}
+                                />
+                            </label>
+                            <label>
+                                До:
+                                <input
+                                    type="date"
+                                    name="toDate"
+                                    value={options.toDate}
+                                    onChange={onChange}
+                                />
                             </label>
                         </div>
 

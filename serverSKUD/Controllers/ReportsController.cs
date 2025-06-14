@@ -1,25 +1,41 @@
-﻿using DashboardDomain.Queries;
-using DashboardDomain.Queries.Object;
+﻿using DashboardDomain.Queries.Object;
+using DashboardDomain.Queries;
 using Microsoft.AspNetCore.Mvc;
-using serviceSKUD;
 
-namespace serverSKUD.Controllers
+[ApiController]
+[Route("api/[controller]")]
+public class ReportsController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ReportsController : ControllerBase
+    private readonly IGenerateReportService _report;
+
+    public ReportsController(IGenerateReportService report)
     {
-        private readonly IQueryService<ReportCriteria, ReportResult> _report;
-        public ReportsController(IGenerateReportService report)
+        _report = report;
+    }
+
+    [HttpPost]
+    public IActionResult Generate([FromBody] ReportCriteria criteria)
+    {
+        // Логируем полученные параметры
+        Console.WriteLine($"Received criteria: {criteria}");
+
+        // Проводим предварительную обработку и проверку параметров
+        if (criteria.FromDate.HasValue && criteria.ToDate.HasValue && criteria.FromDate > criteria.ToDate)
         {
-            _report = report;
+            return BadRequest(new { message = "Дата начала не может быть позже даты конца." });
         }
 
-        [HttpPost]
-        public IActionResult Generate([FromBody]ReportCriteria c)
+        // Генерация отчета с учетом всех фильтров
+        try
         {
-            var r = _report.Execute(c);
-            return File(r.Content, r.MimeType, r.FileName);
+            var reportResult = _report.Execute(criteria);
+            return File(reportResult.Content, reportResult.MimeType, reportResult.FileName);
+        }
+        catch (Exception ex)
+        {
+            // Логируем ошибку
+            Console.WriteLine($"Error generating report: {ex.Message}");
+            return BadRequest(new { message = "Ошибка при генерации отчета.", error = ex.Message });
         }
     }
 }

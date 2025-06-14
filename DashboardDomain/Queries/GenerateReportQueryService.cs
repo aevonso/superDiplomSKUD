@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using DashboardDomain.IRepository;
-using DashboardDomain.Queries.Object;
+﻿using DashboardDomain.Queries.Object;
 using serviceSKUD;
-using Xceed.Words.NET;
-using iText.Kernel.Pdf;
-using iText.Layout;
-using iText.Layout.Element;
+using System;
+using System.Linq;
+using Xceed.Words.NET; // Для DOCX
+using iText.Kernel.Pdf; // Для PDF
+using iText.Layout; // Для PDF
+using iText.Layout.Element; // Для PDF
+using iText.Kernel.Font; // Для PDF
+using iText.IO.Font.Constants; // Для PDF
+using DashboardDomain.IRepository;
 
 namespace DashboardDomain.Queries
 {
@@ -30,7 +30,6 @@ namespace DashboardDomain.Queries
 
         public ReportResult Execute(ReportCriteria criteria)
         {
-            // вытягиваем списки через репозитории
             var emps = criteria.IncludeEmployees
                 ? _employee.GetAllAsync().GetAwaiter().GetResult()
                 : Enumerable.Empty<EmployeeDto>();
@@ -43,29 +42,52 @@ namespace DashboardDomain.Queries
                 ? _accessAttempt.GetRecentAttemptsAsync(100).GetAwaiter().GetResult()
                 : Enumerable.Empty<AttemptDto>();
 
+            if (criteria.FromDate.HasValue)
+            {
+                atts = atts.Where(a => a.Timestamp >= criteria.FromDate.Value).ToList();
+            }
+
+            if (criteria.ToDate.HasValue)
+            {
+                atts = atts.Where(a => a.Timestamp <= criteria.ToDate.Value).ToList();
+            }
+
+            if (criteria.SuccessOnly)
+            {
+                atts = atts.Where(a => a.Success).ToList();
+            }
+            else if (criteria.FailedOnly)
+            {
+                atts = atts.Where(a => !a.Success).ToList();
+            }
+
             return criteria.Format?.ToLower() == "docx"
                 ? BuildDocx(emps, devs, atts)
                 : BuildPdf(emps, devs, atts);
         }
 
+        // Генерация DOCX отчета
         private ReportResult BuildDocx(
             IEnumerable<EmployeeDto> emps,
             IEnumerable<MobileDeviceDto> devs,
             IEnumerable<AttemptDto> atts)
         {
             using var ms = new MemoryStream();
-            using var doc = DocX.Create(ms);
+            using var doc = Xceed.Words.NET.DocX.Create(ms);  // Явно указываем для DOCX
 
-            doc.InsertParagraph("Отчет НАТК").FontSize(20).Bold();
+            doc.InsertParagraph("Отчет НАТК")
+                .FontSize(20).Bold();  // Для DOCX
 
             // Сотрудники
             if (emps.Any())
             {
-                doc.InsertParagraph("Сотрудники").FontSize(16).Bold();
+                doc.InsertParagraph("Сотрудники")
+                    .FontSize(16).Bold().SpacingAfter(10);
                 var table = doc.AddTable(emps.Count() + 1, 3);
                 table.Rows[0].Cells[0].Paragraphs[0].Append("ID");
                 table.Rows[0].Cells[1].Paragraphs[0].Append("ФИО");
                 table.Rows[0].Cells[2].Paragraphs[0].Append("Email");
+
                 int r = 1;
                 foreach (var e in emps)
                 {
@@ -77,15 +99,17 @@ namespace DashboardDomain.Queries
                 doc.InsertTable(table);
             }
 
+            // Мобильные устройства
             if (devs.Any())
             {
-                //мобилки
-                doc.InsertParagraph("Мобильные устройства").FontSize(16).Bold();
+                doc.InsertParagraph("Мобильные устройства")
+                    .FontSize(16).Bold().SpacingAfter(10);
                 var table = doc.AddTable(devs.Count() + 1, 4);
                 table.Rows[0].Cells[0].Paragraphs[0].Append("ID");
                 table.Rows[0].Cells[1].Paragraphs[0].Append("EmployeeId");
                 table.Rows[0].Cells[2].Paragraphs[0].Append("CreatedAt");
                 table.Rows[0].Cells[3].Paragraphs[0].Append("Активно");
+
                 int r = 1;
                 foreach (var d in devs)
                 {
@@ -98,16 +122,18 @@ namespace DashboardDomain.Queries
                 doc.InsertTable(table);
             }
 
+            // Попытки доступа
             if (atts.Any())
             {
-                //попытки доступа
-                doc.InsertParagraph("Попытки доступа").FontSize(16).Bold();
+                doc.InsertParagraph("Попытки доступа")
+                    .FontSize(16).Bold().SpacingAfter(10);
                 var table = doc.AddTable(atts.Count() + 1, 5);
                 table.Rows[0].Cells[0].Paragraphs[0].Append("Время");
                 table.Rows[0].Cells[1].Paragraphs[0].Append("Сотрудник");
                 table.Rows[0].Cells[2].Paragraphs[0].Append("Точка");
                 table.Rows[0].Cells[3].Paragraphs[0].Append("IP");
                 table.Rows[0].Cells[4].Paragraphs[0].Append("Успех");
+
                 int r = 1;
                 foreach (var a in atts)
                 {
@@ -115,7 +141,7 @@ namespace DashboardDomain.Queries
                     table.Rows[r].Cells[1].Paragraphs[0].Append(a.EmployeeFullName);
                     table.Rows[r].Cells[2].Paragraphs[0].Append(a.PointName);
                     table.Rows[r].Cells[3].Paragraphs[0].Append(a.IpAddress);
-                    table.Rows[r].Cells[4].Paragraphs[0].Append(a.Success ? "✓" : "✗");
+                    table.Rows[r].Cells[4].Paragraphs[0].Append(a.Success ? "Успех" : "Провал");
                     r++;
                 }
                 doc.InsertTable(table);
@@ -130,6 +156,7 @@ namespace DashboardDomain.Queries
             };
         }
 
+        // Генерация PDF отчета
         private ReportResult BuildPdf(
             IEnumerable<EmployeeDto> emps,
             IEnumerable<MobileDeviceDto> devs,
@@ -139,6 +166,10 @@ namespace DashboardDomain.Queries
             var writer = new PdfWriter(ms);
             var pdf = new PdfDocument(writer);
             var layout = new Document(pdf);
+
+            // Загружаем шрифт с поддержкой кириллицы
+            var font = PdfFontFactory.CreateFont("c:/windows/fonts/times.ttf", PdfFontFactory.EmbeddingStrategy.PREFER_EMBEDDED);
+            layout.SetFont(font);
 
             layout.Add(new Paragraph("Отчет НАТК").SetFontSize(20));
 
@@ -158,7 +189,6 @@ namespace DashboardDomain.Queries
                 layout.Add(tableE);
             }
 
-            // Устройства
             if (devs.Any())
             {
                 layout.Add(new Paragraph("Мобильные устройства").SetFontSize(16));
@@ -177,7 +207,6 @@ namespace DashboardDomain.Queries
                 layout.Add(tableD);
             }
 
-            // Попытки доступа
             if (atts.Any())
             {
                 layout.Add(new Paragraph("Попытки доступа").SetFontSize(16));
@@ -193,7 +222,7 @@ namespace DashboardDomain.Queries
                     tableA.AddCell(a.EmployeeFullName);
                     tableA.AddCell(a.PointName);
                     tableA.AddCell(a.IpAddress);
-                    tableA.AddCell(a.Success ? "✓" : "✗");
+                    tableA.AddCell(a.Success ? "Успех" : "Провал");
                 }
                 layout.Add(tableA);
             }
