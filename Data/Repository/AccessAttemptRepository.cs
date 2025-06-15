@@ -19,29 +19,36 @@ namespace Data.Repository
         public async Task<List<AttemptDto>> GetFilteredAttemptsAsync(DateTime? from, DateTime? to, int? pointId, int? employeeId, int take)
         {
             var query = _db.AccessAttempts.AsNoTracking()
-                                          .Include(a => a.Employee)
-                                          .Include(a => a.PointOfPassage).ThenInclude(p => p.Room)
-                                          .AsQueryable();
+                            .Include(a => a.Employee)
+                            .Include(a => a.PointOfPassage)
+                                .ThenInclude(p => p.Room)
+                            .AsQueryable();
+
+            // Добавляем логирование параметров
+            Console.WriteLine($"Filter params - From: {from}, To: {to}, PointId: {pointId}, EmployeeId: {employeeId}");
+
             if (from.HasValue)
-                query = query.Where(a => a.Timestamp >= from.Value);
+                query = query.Where(a => a.Timestamp >= from.Value.Date); // Используем .Date для сравнения дат без времени
+
             if (to.HasValue)
-                query = query.Where(a => a.Timestamp <= to.Value);
-            if (pointId.HasValue)
-                query = query.Where(a => a.PointOfPassageId == pointId.Value);
-            if (employeeId.HasValue)
-                query = query.Where(a => a.EmployeeId == employeeId.Value);
+                query = query.Where(a => a.Timestamp <= to.Value.Date.AddDays(1).AddTicks(-1)); // Включаем весь последний день
 
-            var efList = await query
-                .OrderByDescending(a => a.Timestamp)
-                .Take(take)
-                .ToListAsync();
+            // Остальные условия фильтрации...
 
-            return efList.Select(a => new AttemptDto
+            var result = await query.OrderByDescending(a => a.Timestamp)
+                                   .Take(take)
+                                   .ToListAsync();
+
+            Console.WriteLine($"Found {result.Count} records"); // Логируем количество найденных записей
+
+            return result.Select(a => new AttemptDto
             {
-                EmployeeFullName = $"{a.Employee.LastName} {a.Employee.FirstName[0]}.",
-                RoomName = a.PointOfPassage.Room.Name,
-                PointName = a.PointOfPassage.Name,
-                IpAddress = a.PointOfPassage.IpAddress,
+                EmployeeFullName = a.Employee != null
+                    ? $"{a.Employee.LastName} {a.Employee.FirstName[0]}."
+                    : "Неизвестно",
+                RoomName = a.PointOfPassage?.Room?.Name ?? "Неизвестная комната",
+                PointName = a.PointOfPassage?.Name ?? "Мобильное устройство",
+                IpAddress = FormatIpAddress(a.IpAddress), // Берем из Attempt, а не из PointOfPassage
                 Timestamp = a.Timestamp,
                 Success = a.Success
             }).ToList();
@@ -60,16 +67,32 @@ namespace Data.Repository
 
             return efList.Select(a => new AttemptDto
             {
-                // Проверка на null для связанных объектов
                 EmployeeFullName = a.Employee != null
                                    ? $"{a.Employee.LastName} {a.Employee.FirstName[0]}."
-                                   : "Неизвестно",  // Если Employee == null, ставим заглушку
-                RoomName = a.PointOfPassage?.Room?.Name ?? "Неизвестная комната",  // Используем null-оператор для проверки
-                PointName = a.PointOfPassage?.Name ?? "Неизвестная точка",  // Используем null-оператор
-                IpAddress = a.PointOfPassage?.IpAddress ?? "Неизвестный IP",  // Используем null-оператор
+                                   : "Неизвестно",
+                RoomName = a.PointOfPassage?.Room?.Name ?? "Неизвестная комната",
+                PointName = a.PointOfPassage?.Name ?? "Неизвестная точка",
+                IpAddress = FormatIpAddress(a.IpAddress),
                 Timestamp = a.Timestamp,
                 Success = a.Success
             }).ToList();
+        }
+
+
+        private string FormatIpAddress(string ipAddress)
+        {
+            if (string.IsNullOrWhiteSpace(ipAddress))
+                return "Неизвестный IP";
+
+            // Удаляем IPv6 префикс для IPv4-адресов
+            if (ipAddress.StartsWith("::ffff:"))
+                return ipAddress.Substring(7); // Удаляем первые 7 символов
+
+            // Преобразуем локальный IPv6 в IPv4
+            if (ipAddress == "::1")
+                return "127.0.0.1";
+
+            return ipAddress;
         }
     }
 }

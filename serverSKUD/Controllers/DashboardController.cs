@@ -125,7 +125,7 @@ namespace serverSKUD.Controllers
     public class AccessAttemptDto
     {
         public int EmployeeId { get; set; }
-        public int? PointOfPassageId { get; set; }  // nullable
+        public int? PointOfPassageId { get; set; }  
         public DateTime Timestamp { get; set; }
         public bool Success { get; set; }
         public string? FailureReason { get; set; }
