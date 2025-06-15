@@ -36,7 +36,21 @@ export default function AccessMatrixPage() {
         fetchAccessMatrix({ floorId, divisionId }).then(setMatrix);
     }, [floorId, divisionId]);
 
-    const posts = Array.from(new Map(matrix.map(x => [x.post.id, x.post])).values());
+    // Группировка должностей по подразделениям
+    const groupedPosts = divisions.map(division => {
+        const divisionPosts = Array.from(
+            new Map(
+                matrix
+                    .filter(entry => entry.post.division.id === division.id)
+                    .map(entry => [entry.post.id, entry.post])
+            ).values()
+        );
+
+        return {
+            division,
+            posts: divisionPosts
+        };
+    }).filter(group => group.posts.length > 0);
 
     const toggleAccess = async (entry) => {
         try {
@@ -90,7 +104,6 @@ export default function AccessMatrixPage() {
                     </nav>
                 </aside>
 
-
                 <main className="Main">
                     <div className="MatrixFilters">
                         <label>
@@ -130,34 +143,42 @@ export default function AccessMatrixPage() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {posts.map(post => (
-                                    <tr key={post.id}>
-                                        <td>{post.division.name}</td>
-                                        <td>{post.name}</td>
-                                        {rooms.map(room => {
-                                            const entry = matrix.find(
-                                                m => m.post.id === post.id && m.room.id === room.id
-                                            );
+                                {groupedPosts.map(group => (
+                                    <React.Fragment key={group.division.id}>
+                                        {group.posts.map((post, postIndex) => (
+                                            <tr key={post.id}>
+                                                {postIndex === 0 && (
+                                                    <td rowSpan={group.posts.length} className="division-cell">
+                                                        {group.division.name}
+                                                    </td>
+                                                )}
+                                                <td>{post.name}</td>
+                                                {rooms.map(room => {
+                                                    const entry = matrix.find(
+                                                        m => m.post.id === post.id && m.room.id === room.id
+                                                    );
 
-                                            if (!entry) {
-                                                return (
-                                                    <td key={room.id} className="MatrixCell empty">—</td>
-                                                );
-                                            }
+                                                    if (!entry) {
+                                                        return (
+                                                            <td key={room.id} className="MatrixCell empty">—</td>
+                                                        );
+                                                    }
 
-                                            return (
-                                                <td
-                                                    key={room.id}
-                                                    className={entry.isAccess ? 'MatrixCell ok' : 'MatrixCell no'}
-                                                    onClick={() => toggleAccess(entry)}
-                                                    style={{ cursor: 'pointer' }}
-                                                    title="Клик для изменения доступа"
-                                                >
-                                                    {entry.isAccess ? '✔' : '✖'}
-                                                </td>
-                                            );
-                                        })}
-                                    </tr>
+                                                    return (
+                                                        <td
+                                                            key={room.id}
+                                                            className={entry.isAccess ? 'MatrixCell ok' : 'MatrixCell no'}
+                                                            onClick={() => toggleAccess(entry)}
+                                                            style={{ cursor: 'pointer' }}
+                                                            title="Клик для изменения доступа"
+                                                        >
+                                                            {entry.isAccess ? '✔' : '✖'}
+                                                        </td>
+                                                    );
+                                                })}
+                                            </tr>
+                                        ))}
+                                    </React.Fragment>
                                 ))}
                             </tbody>
                         </table>

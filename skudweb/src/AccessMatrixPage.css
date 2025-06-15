@@ -50,9 +50,10 @@
         font-weight: 500;
     }
 
-    .MatrixTable tbody tr:nth-child(even) {
-        background: rgba(0,0,0,0.03);
-    }
+.division-cell {
+    font-weight: bold;
+    background-color: #f5f5f5;
+}
 
 /* ÷вет €чеек */
 .MatrixCell.ok {
@@ -63,6 +64,11 @@
 .MatrixCell.no {
     background: #f8d7da;
     color: #721c24;
+}
+
+.MatrixCell.empty {
+    background: #f9f9f9;
+    color: #999;
 }
 
 /*  нопки действий */
@@ -86,6 +92,7 @@
         .MatrixActions .Btn:hover {
             background: #0041b3;
         }
+
 .MatrixButtons {
     display: flex;
     justify-content: center;
