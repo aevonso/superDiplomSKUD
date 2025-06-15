@@ -48,7 +48,7 @@ namespace Data.Repository
                     : "Неизвестно",
                 RoomName = a.PointOfPassage?.Room?.Name ?? "Неизвестная комната",
                 PointName = a.PointOfPassage?.Name ?? "Мобильное устройство",
-                IpAddress = FormatIpAddress(a.IpAddress), // Берем из Attempt, а не из PointOfPassage
+                IpAddress = FormatIpAddress(a.IpAddress), 
                 Timestamp = a.Timestamp,
                 Success = a.Success
             }).ToList();
