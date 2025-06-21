@@ -57,10 +57,11 @@ builder.WebHost.ConfigureKestrel(options =>
 builder.Services.AddControllers()
     .AddJsonOptions(opts =>
     {
-        opts.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;  
+        opts.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         opts.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        // Дополнительные настройки теперь не так критичны, так как мы используем DTO
         opts.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-
+        opts.JsonSerializerOptions.WriteIndented = builder.Environment.IsDevelopment();
     });
 
 builder.Services.AddEndpointsApiExplorer();

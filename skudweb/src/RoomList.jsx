@@ -158,11 +158,7 @@ export default function RoomList() {
             {/* Скрытый контейнер: для каждой комнаты отрисовываем QR-страницу */}
             <div className="QRBatchContainer" ref={batchRef}>
                 {rooms.map(rm => {
-                    const allowed = accessMap[rm.id] || [];
-                    // отрисовываем, но дальше в PDF уйдут только те, у которых allowed.length>0
-                    const expires = new Date(Date.now() + 1.5 * 3600 * 1000);
-                    const hh = expires.getHours().toString().padStart(2, '0');
-                    const mm = expires.getMinutes().toString().padStart(2, '0');
+                    // отрисовываем QR-код для всех комнат, но в PDF попадут только те, у которых есть доступные должности
                     return (
                         <div
                             key={rm.id}
@@ -172,18 +168,6 @@ export default function RoomList() {
                             <h2 className="qr-header">QR-код для помещения №{rm.name}</h2>
                             <div className="qr-wrapper">
                                 <QRCode value={JSON.stringify({ roomId: rm.id })} size={150} />
-                            </div>
-                            <div className="qr-info">
-                                <div className="room-label">Помещение №{rm.name}</div>
-                                <div className="lifetime">Время работы: {hh}:{mm}</div>
-                                {allowed.length > 0 && (
-                                    <div className="access-list">
-                                        <strong>Доступно должностям:</strong>
-                                        <ul>
-                                            {allowed.map(p => <li key={p.id}>{p.name}</li>)}
-                                        </ul>
-                                    </div>
-                                )}
                             </div>
                         </div>
                     );

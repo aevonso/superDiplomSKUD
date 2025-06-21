@@ -8,7 +8,10 @@ namespace AuntificationDomain.Queries.Object
 {
     public class TwoFactorResult
     {
+
         public bool Success { get; set; }
         public string? Message { get; set; }
+        public int? EmployeeId { get; set; } // Добавляем ID сотрудника
+        public string? EmployeeFullName { get; set; } 
     }
 }

@@ -26,76 +26,84 @@ namespace serverSKUD.Controllers
             _logHub = logHub;
         }
 
-        // DTO ответа
         public class LoginResponse
         {
             public string Message { get; set; } = default!;
             public string? Token { get; set; }
+            public int? EmployeeId { get; set; }  
         }
 
-        // POST auth/login
         [HttpPost("login")]
         public async Task<ActionResult<LoginResponse>> Login([FromBody] EntryDto dto)
         {
-            // 1) Проверяем тело запроса
-            if (dto == null
-                || string.IsNullOrWhiteSpace(dto.Login)
-                || string.IsNullOrWhiteSpace(dto.Password))
+            if (dto == null || string.IsNullOrWhiteSpace(dto.Login) || string.IsNullOrWhiteSpace(dto.Password))
             {
-                return BadRequest(new LoginResponse
-                {
-                    Message = "Логин и пароль обязательны."
-                });
+                await LogFailedAttempt(null, dto?.Login ?? "Unknown", "Не указаны логин или пароль");
+                return BadRequest(new LoginResponse { Message = "Логин и пароль обязательны." });
             }
 
-            // 2) Ищем пользователя
+            // Находим сотрудника по логину (даже если пароль неверный)
             var employee = await _dbContext.Employees
                 .AsNoTracking()
                 .FirstOrDefaultAsync(e => e.Login == dto.Login);
 
-            // 3) Неверные данные
             if (employee == null || employee.Password != dto.Password)
             {
-                await LogFailedAttempt(dto.Login);
+                await LogFailedAttempt(employee?.Id, dto.Login, "Неверный логин или пароль");
                 return Unauthorized(new LoginResponse
                 {
-                    Message = "Неверный логин или пароль."
+                    Message = "Неверный логин или пароль.",
+                    EmployeeId = employee?.Id  // Возвращаем ID, даже если аутентификация не удалась
                 });
             }
 
-            // 4) Успешная авторизация
             await LogSuccessfulAttempt(employee);
             var token = GenerateToken(employee);
 
             return Ok(new LoginResponse
             {
                 Message = "Вход выполнен успешно.",
-                Token = token
+                Token = token,
+                EmployeeId = employee.Id  // ID сотрудника при успешной аутентификации
             });
         }
 
-        private async Task LogFailedAttempt(string login)
+        private async Task LogFailedAttempt(int? employeeId, string login, string reason)
         {
+            string employeeName = "Неизвестный пользователь";
+            if (employeeId.HasValue)
+            {
+                var employee = await _dbContext.Employees
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(e => e.Id == employeeId);
+                if (employee != null)
+                {
+                    employeeName = $"{employee.LastName} {employee.FirstName}";
+                }
+            }
+
             var log = new AccessAttempt
             {
-                EmployeeId = 0,
+                EmployeeId = employeeId,
                 PointOfPassageId = null,
                 Timestamp = DateTime.UtcNow,
                 Success = false,
-                FailureReason = "Неверный логин или пароль",
-                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown"
+                FailureReason = reason,
+                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown",
             };
+
             _dbContext.AccessAttempts.Add(log);
             await _dbContext.SaveChangesAsync();
 
             await _logHub.Clients.All.SendAsync("ReceiveLog", new
             {
                 timestamp = log.Timestamp,
-                employeeFullName = "Неизвестный пользователь",
+                employeeId = employeeId,
+                employeeFullName = employeeName,
                 pointName = "Авторизация",
                 ipAddress = log.IpAddress,
                 success = log.Success,
-                failureReason = log.FailureReason
+                failureReason = log.FailureReason,
             });
         }
 
@@ -108,24 +116,24 @@ namespace serverSKUD.Controllers
                 Timestamp = DateTime.UtcNow,
                 Success = true,
                 FailureReason = null,
-                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown"
+                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown",
             };
+
             _dbContext.AccessAttempts.Add(log);
             await _dbContext.SaveChangesAsync();
 
             await _logHub.Clients.All.SendAsync("ReceiveLog", new
             {
                 timestamp = log.Timestamp,
+                employeeId = employee.Id,
                 employeeFullName = $"{employee.LastName} {employee.FirstName}",
                 pointName = "Авторизация",
                 ipAddress = log.IpAddress,
                 success = log.Success,
-                failureReason = log.FailureReason
+                failureReason = log.FailureReason,
             });
         }
 
-        // Простая генерация токена (можно заменить на JWT)
-        private string GenerateToken(Employee employee)
-            => $"{employee.Id}-{Guid.NewGuid()}";
+        private string GenerateToken(Employee employee) => $"{employee.Id}-{Guid.NewGuid()}";
     }
 }

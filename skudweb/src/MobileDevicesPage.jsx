@@ -116,7 +116,6 @@ export default function MobileDevicesPage() {
                                 <th>Сотрудник</th>
                                 <th>Устройство</th>
                                 <th>Дата регистрации</th>
-                                <th>Статус</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -129,9 +128,7 @@ export default function MobileDevicesPage() {
                                     <td>{dev.employeeName}</td>
                                     <td>{dev.deviceName}</td>
                                     <td>{new Date(dev.createdAt).toLocaleString('ru-RU')}</td>
-                                    <td className={dev.isActive ? 'green' : 'red'}>
-                                        {dev.isActive ? 'В сети' : 'Отключен'}
-                                    </td>
+
                                 </tr>
                             ))}
                         </tbody>

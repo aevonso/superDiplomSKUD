@@ -16,34 +16,68 @@ namespace serverSKUD.Controllers
 
         // Получение всех записей матрицы доступа с возможностью фильтрации
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<AccessMatrix>> GetById(int id)
+        public async Task<ActionResult<AccessMatrixDto>> GetById(int id)
         {
-            var x = await _db.AccessMatrices
-                .Include(a => a.Post)
-                .Include(a => a.Room)
+            var accessMatrix = await _db.AccessMatrices
+                .Include(a => a.Post).ThenInclude(p => p.Division)
+                .Include(a => a.Room).ThenInclude(r => r.Floor)
                 .FirstOrDefaultAsync(a => a.Id == id);
-            if (x == null) return NotFound();
-            return Ok(x);
+
+            if (accessMatrix == null) return NotFound();
+
+            return Ok(MapToDto(accessMatrix));
         }
-            [HttpGet]
-            public async Task<ActionResult<IEnumerable<AccessMatrix>>> GetAll(
-                 [FromQuery] int? floorId,
-                 [FromQuery] int? divisionId)
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<AccessMatrixDto>>> GetAll(
+            [FromQuery] int? floorId,
+            [FromQuery] int? divisionId)
+        {
+            var query = _db.AccessMatrices
+                .Include(x => x.Post).ThenInclude(p => p.Division)
+                .Include(x => x.Room).ThenInclude(r => r.Floor)
+                .AsQueryable();
+
+            if (floorId.HasValue)
+                query = query.Where(x => x.Room.FloorId == floorId.Value);
+
+            if (divisionId.HasValue)
+                query = query.Where(x => x.Post.DivisionId == divisionId.Value);
+
+            var accessMatrices = await query.ToListAsync();
+
+            return Ok(accessMatrices.Select(MapToDto));
+        }
+
+        // Метод для преобразования Entity в DTO
+        private AccessMatrixDto MapToDto(AccessMatrix accessMatrix)
+        {
+            return new AccessMatrixDto
             {
-                var q = _db.AccessMatrices
-                    .Include(x => x.Post).ThenInclude(p => p.Division)
-                    .Include(x => x.Room).ThenInclude(r => r.Floor)
-                    .AsQueryable();
-
-                if (floorId.HasValue)
-                    q = q.Where(x => x.Room.FloorId == floorId.Value);
-
-                if (divisionId.HasValue)
-                    q = q.Where(x => x.Post.DivisionId == divisionId.Value);
-
-                var list = await q.ToListAsync();
-                return Ok(list);
-            }
+                Id = accessMatrix.Id,
+                IsAccess = accessMatrix.IsAccess,
+                Post = accessMatrix.Post == null ? null : new PostDto
+                {
+                    Id = accessMatrix.Post.Id,
+                    Name = accessMatrix.Post.Name,
+                    Division = accessMatrix.Post.Division == null ? null : new DivisionDto
+                    {
+                        Id = accessMatrix.Post.Division.Id,
+                        Name = accessMatrix.Post.Division.Name
+                    }
+                },
+                Room = accessMatrix.Room == null ? null : new RoomDto
+                {
+                    Id = accessMatrix.Room.Id,
+                    Name = accessMatrix.Room.Name,
+                    Floor = accessMatrix.Room.Floor == null ? null : new FloorDto
+                    {
+                        Id = accessMatrix.Room.Floor.Id,
+                        Name = accessMatrix.Room.Floor.Name
+                    }
+                }
+            };
+        }
 
         // Создание новой записи в матрице доступа
         [HttpPost]

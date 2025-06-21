@@ -117,9 +117,6 @@ export default function RoomCard() {
     };
 
     const qrValue = JSON.stringify({ roomId });
-    const expires = new Date(Date.now() + 1.5 * 3600 * 1000);
-    const hh = expires.getHours().toString().padStart(2, '0');
-    const mm = expires.getMinutes().toString().padStart(2, '0');
 
     return (
         <div className="RoomCardPage">
@@ -166,13 +163,6 @@ export default function RoomCard() {
                                 <div ref={qrRef} className="QRWrapper">
                                     <div className="QRHeader">QR-код помещения №{form.name}</div>
                                     <QRCode value={qrValue} size={120} />
-                                    <div className="QRFooter">Время действия: {hh}:{mm}</div>
-                                    <div className="AccessList">
-                                        <div className="AccessTitle">Доступно должностям:</div>
-                                        <ul>
-                                            {posts.map(p => <li key={p.id}>{p.name}</li>)}
-                                        </ul>
-                                    </div>
                                 </div>
                             )
                         }
